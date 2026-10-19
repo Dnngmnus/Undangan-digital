@@ -11,7 +11,7 @@ import { getDemoInvitation } from "@/lib/demo-data";
 import { env } from "@/lib/env";
 import { getPublishedTestimonials } from "@/lib/supabase/public";
 import { formatDateDots, rupiah, waLink } from "@/lib/utils";
-import { THEMES, catalogTab, googleFontsHref, themeKind } from "@/themes/registry";
+import { THEMES, googleFontsHref, themeKind } from "@/themes/registry";
 
 // Tanggal demo & akhir promo dihitung relatif hari ini; testimoni baru muncul dalam ≤1 jam.
 export const revalidate = 3600;
@@ -27,7 +27,6 @@ const FAQ = [
   { q: "Bagaimana cara memesan?", a: "Pilih tema di katalog, buka demonya, lalu tekan Pesan. Isi formulir singkat dan kirim ringkasannya ke WhatsApp admin." },
   { q: "Bagaimana cara pembayarannya?", a: "Pembayaran penuh lewat transfer bank setelah admin mengirim tagihan. Kirim bukti transfer di chat yang sama." },
   { q: "Berapa lama undangan selesai?", a: `Paling lambat ${TURNAROUND} setelah data lengkap dan pembayaran diterima. Butuh lebih cepat? Ambil add-on Express.` },
-  { q: "Apa itu Tema Motion?", a: "Tema yang sampulnya hidup: foto berganti dengan zoom perlahan atau bergulir, kelopak/kilau melayang, dan ada animasi saat undangan dibuka. Tidak perlu video, cukup foto biasa. Harga paket sama dengan tema lain." },
   { q: "Foto belum siap, bisa pesan dulu?", a: "Bisa. Foto boleh menyusul setelah pemesanan. Kalau tidak ingin memakai foto, pilih dari Tema Non Foto." },
   { q: "Apakah isi undangan bisa diubah?", a: "Semua teks bisa diubah, dan section yang tidak dipakai bisa dihilangkan. Paket Eksklusif mendapat revisi tanpa batas." },
   { q: "Bagaimana cara mengirim ke tamu?", a: "Kamu menerima daftar link per nama tamu beserta teks pengantar yang tinggal ditempel ke WhatsApp." },
@@ -42,7 +41,6 @@ export default async function HomePage() {
   const endsLabel = endsAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", timeZone: "Asia/Jakarta" });
   const cheapest = Math.min(...PACKAGES.map((p) => p.price));
   const nonFoto = THEMES.filter((t) => themeKind(t) === "non-foto").length;
-  const motion = THEMES.filter((t) => catalogTab(t) === "motion").length;
   const promoWa = waLink(env.adminWa, `Halo ${env.brandName}, saya mau klaim ${PROMO.name} untuk undangan digital.`);
 
   return (
@@ -61,10 +59,6 @@ export default async function HomePage() {
                   Diskon sampai {Math.max(...PACKAGES.map(discountPercent))}% hingga {endsLabel}
                 </p>
               )}
-              <Link href="#katalog" className="mt-4 inline-flex items-center gap-2 rounded-full border border-paper/30 px-3 py-1 text-sm text-paper/90 hover:border-marigold">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-marigold" aria-hidden />
-                Baru: Tema Motion, foto bergerak di sampul
-              </Link>
               <h1 className="mt-5 font-serif-display text-4xl leading-[1.08] sm:text-5xl lg:text-[3.6rem]">
                 Undangan pernikahan digital yang sampai ke setiap tamu, lengkap dengan namanya.
               </h1>
@@ -81,7 +75,7 @@ export default async function HomePage() {
 
               <ul className="mt-10 grid max-w-lg grid-cols-3 gap-3 text-sm">
                 {[
-                  [`${THEMES.length} tema`, `${motion} bergerak · ${nonFoto} tanpa foto`],
+                  [`${THEMES.length} tema`, `${nonFoto} tanpa foto`],
                   [TURNAROUND, "waktu pengerjaan"],
                   [`${rupiah(cheapest).replace(".000", "rb")}`, "harga mulai"],
                 ].map(([a, b]) => (
@@ -110,7 +104,7 @@ export default async function HomePage() {
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <h2 className="text-center font-serif-display text-3xl sm:text-4xl">Katalog tema</h2>
             <p className="mx-auto mb-8 mt-3 max-w-lg text-center text-ink-soft">
-              Yang tampil adalah sampul asli setiap tema, termasuk gerakannya. Tekan salah satunya untuk membuka undangan contoh secara lengkap.
+              Yang tampil adalah sampul asli setiap tema. Tekan salah satunya untuk membuka undangan contoh secara lengkap.
             </p>
             <Catalog data={demo.data} dateLabel={dateLabel} />
           </div>

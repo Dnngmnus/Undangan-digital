@@ -158,11 +158,105 @@ const BlurDef = () => (
   </defs>
 );
 
+
+/* ------------------------------------------------------------------ */
+/* Motif Jawa                                                          */
+/* ------------------------------------------------------------------ */
+
+/** Gunungan / kayon wayang: siluet runcing, pohon hayat di dalam, gapura di kaki. h = tinggi total. */
+export function Gunungan({ cx, y, h }: { cx: number; y: number; h: number }) {
+  const s = h / 100; // desain asli 60×100
+  return (
+    <g transform={`translate(${cx - 30 * s} ${y}) scale(${s})`} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <path
+        d="M30 0 C40 18 58 40 58 64 C58 78 52 86 46 90 L46 100 L14 100 L14 90 C8 86 2 78 2 64 C2 40 20 18 30 0Z"
+        fill="currentColor"
+        fillOpacity={0.14}
+        strokeWidth={1.4}
+      />
+      <path d="M30 6 C38 22 52 42 52 63 C52 74 47 81 42 84 M30 6 C22 22 8 42 8 63 C8 74 13 81 18 84" fill="none" strokeWidth={0.7} opacity={0.7} />
+      {/* pohon hayat: batang + cabang melengkung simetris */}
+      <path d="M30 84 V24" fill="none" strokeWidth={1.2} />
+      {[
+        [70, 14, 60],
+        [56, 12, 46],
+        [42, 9, 34],
+      ].map(([y0, w, y1]) => (
+        <g key={y0} fill="none" strokeWidth={1}>
+          <path d={`M30 ${y0} C${30 + w} ${y0 - 3} ${30 + w + 2} ${y1 + 4} ${30 + w - 3} ${y1}`} />
+          <path d={`M30 ${y0} C${30 - w} ${y0 - 3} ${30 - w - 2} ${y1 + 4} ${30 - w + 3} ${y1}`} />
+          <circle cx={30 + w - 3} cy={y1 - 2} r={1.6} fill="currentColor" stroke="none" />
+          <circle cx={30 - w + 3} cy={y1 - 2} r={1.6} fill="currentColor" stroke="none" />
+        </g>
+      ))}
+      <circle cx={30} cy={20} r={2.2} fill="currentColor" stroke="none" />
+      {/* gapura */}
+      <path d="M21 100 V88 H39 V100 M25 100 V93 Q30 88 35 93 V100" fill="none" strokeWidth={1} />
+    </g>
+  );
+}
+
+/** Lung-lungan: sulur melingkar khas ukiran Jawa. */
+function Curl({ x, y, s = 1, rot = 0 }: { x: number; y: number; s?: number; rot?: number }) {
+  return (
+    <path
+      d="M0 0 C10 -8 26 -6 28 6 C30 16 18 20 14 13 C11 8 17 4 20 8"
+      transform={`translate(${x} ${y}) rotate(${rot}) scale(${s})`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.2 / s}
+      strokeLinecap="round"
+    />
+  );
+}
+
+/** Bunga truntum: delapan kelopak titik mengelilingi pusat (motif batik pernikahan Jawa). */
+function Truntum({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  return (
+    <g fill="currentColor">
+      {Array.from({ length: 8 }, (_, i) => {
+        const a = (i * Math.PI) / 4;
+        return <circle key={i} cx={cx + Math.cos(a) * r} cy={cy + Math.sin(a) * r} r={r * 0.32} />;
+      })}
+      <circle cx={cx} cy={cy} r={r * 0.42} fill="none" stroke="currentColor" strokeWidth={r * 0.12} />
+      <circle cx={cx} cy={cy} r={r * 0.14} />
+    </g>
+  );
+}
+
+/** Garis parang: lengkung S diagonal dari (0,L) ke (L,0). */
+function ParangBand({ L, w = 1.2 }: { L: number; w?: number }) {
+  const h = L / 2;
+  return (
+    <g fill="none" stroke="currentColor" strokeLinecap="round">
+      <path d={`M0 ${L} Q${L * 0.12} ${h} ${h} ${h} T${L} 0`} strokeWidth={w} />
+      <path d={`M${L * 0.12} ${L} Q${L * 0.24} ${h + L * 0.1} ${h + L * 0.06} ${h + L * 0.06} T${L} ${L * 0.12}`} strokeWidth={w * 0.6} opacity={0.6} />
+    </g>
+  );
+}
+
+/** Janur: untaian lipatan daun kelapa muda yang menggantung. */
+function Janur({ x, y, len }: { x: number; y: number; len: number }) {
+  const n = Math.floor(len / 7);
+  return (
+    <g transform={`translate(${x} ${y})`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <path d={`M0 0 V${len}`} strokeWidth={0.6} opacity={0.5} />
+      {Array.from({ length: n }, (_, i) => {
+        const yy = 4 + i * 7;
+        const w = 6 - (i / n) * 3;
+        return <path key={i} d={`M${-w} ${yy} L0 ${yy + 4} L${w} ${yy}`} strokeWidth={1.3} />;
+      })}
+      <path d={`M0 ${len} c-4 4 -2 10 3 9`} strokeWidth={1} />
+    </g>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Corner: ornamen sudut 120×120, diputar via prop `position`          */
 /* ------------------------------------------------------------------ */
 type Position = "tl" | "tr" | "bl" | "br";
 const ROTATE: Record<Position, string> = { tl: "", tr: "scale(-1,1)", bl: "scale(1,-1)", br: "scale(-1,-1)" };
+const SWAY_DELAY: Record<Position, string> = { tl: "0s", tr: "-1.8s", bl: "-3.6s", br: "-5.4s" };
 const PLACE: Record<Position, string> = { tl: "top-0 left-0", tr: "top-0 right-0", bl: "bottom-0 left-0", br: "bottom-0 right-0" };
 
 function CornerShape({ kind }: { kind: OrnamentKind }) {
@@ -268,6 +362,48 @@ function CornerShape({ kind }: { kind: OrnamentKind }) {
           <Sprig p0={[6, 6]} p1={[20, 50]} p2={[18, 96]} count={6} size={0.75} />
         </>
       );
+    case "gunungan":
+      return (
+        <g>
+          {/* sulur lung-lungan di sepanjang dua sisi + gunungan kecil di sudut */}
+          <path d="M3 117V3h114" fill="none" stroke="currentColor" strokeWidth={0.8} opacity={0.6} />
+          {[16, 46, 76].map((x, i) => <Curl key={`h${x}`} x={x} y={12} s={0.9 - i * 0.15} />)}
+          {[16, 46, 76].map((yy, i) => <Curl key={`v${yy}`} x={12} y={yy} s={0.9 - i * 0.15} rot={90} />)}
+          <Gunungan cx={36} y={20} h={44} />
+        </g>
+      );
+    case "parang":
+      return (
+        <g>
+          {[40, 66, 92, 118].map((L, i) => <ParangBand key={L} L={L} w={1.3 - i * 0.2} />)}
+          {[[18, 18], [32, 30], [44, 44]].map(([cx, cy]) => (
+            <path key={cx} d={`M${cx} ${cy - 3}l3 3-3 3-3-3z`} fill="currentColor" />
+          ))}
+        </g>
+      );
+    case "truntum":
+      return (
+        <g>
+          <Truntum cx={22} cy={22} r={9} />
+          <Truntum cx={56} cy={14} r={6} />
+          <Truntum cx={14} cy={56} r={6} />
+          <Truntum cx={46} cy={44} r={4.5} />
+          <Truntum cx={84} cy={10} r={3.5} />
+          <Truntum cx={10} cy={84} r={3.5} />
+          <Curl x={64} y={30} s={0.8} />
+          <Curl x={30} y={64} s={0.8} rot={90} />
+        </g>
+      );
+    case "janur":
+      return (
+        <g>
+          <path d="M0 6 Q60 18 120 6" fill="none" stroke="currentColor" strokeWidth={1} />
+          <Janur x={14} y={8} len={70} />
+          <Janur x={38} y={12} len={52} />
+          <Janur x={62} y={13} len={38} />
+          <Janur x={86} y={12} len={26} />
+        </g>
+      );
     case "line":
     default:
       return (
@@ -287,7 +423,10 @@ export function Corner({ kind, position, className = "" }: { kind: OrnamentKind;
       className={`pointer-events-none absolute ${PLACE[position]} h-24 w-24 @md:h-28 @md:w-28 ${className}`}
       style={{ transform: ROTATE[position] }}
     >
-      <CornerShape kind={kind} />
+      {/* delay berbeda per sudut agar keempatnya tidak bergoyang serempak */}
+      <g className="iv-sway" style={{ animationDelay: SWAY_DELAY[position] }}>
+        <CornerShape kind={kind} />
+      </g>
     </svg>
   );
 }
@@ -364,6 +503,40 @@ export function Divider({ kind, className = "" }: { kind: OrnamentKind; classNam
         </>
       );
       break;
+    case "gunungan":
+      center = (
+        <>
+          <Curl x={64} y={14} s={0.7} />
+          <Curl x={136} y={14} s={0.7} rot={180} />
+          <Gunungan cx={100} y={0} h={24} />
+        </>
+      );
+      break;
+    case "parang":
+      center = (
+        <g transform="translate(88 0)">
+          <ParangBand L={24} />
+        </g>
+      );
+      break;
+    case "truntum":
+      center = (
+        <>
+          <Truntum cx={100} cy={12} r={6} />
+          <Truntum cx={82} cy={12} r={3} />
+          <Truntum cx={118} cy={12} r={3} />
+        </>
+      );
+      break;
+    case "janur":
+      center = (
+        <>
+          <Janur x={92} y={0} len={20} />
+          <Janur x={108} y={0} len={20} />
+          <path d="M84 2 Q100 8 116 2" fill="none" stroke="currentColor" />
+        </>
+      );
+      break;
     default:
       center = <circle cx={100} cy={12} r={2.5} fill="currentColor" />;
   }
@@ -380,8 +553,8 @@ export function Divider({ kind, className = "" }: { kind: OrnamentKind; classNam
 /* Pola latar halus (hanya untuk ornamen bertekstur)                   */
 /* ------------------------------------------------------------------ */
 export function PatternBg({ kind, opacity = 0.06 }: { kind: OrnamentKind; opacity?: number }) {
-  if (!["kawung", "deco", "wave", "islamic", "megamendung"].includes(kind)) return null;
-  const size: Record<string, [number, number]> = { wave: [60, 24], megamendung: [96, 60], islamic: [40, 40] };
+  if (!["kawung", "deco", "wave", "islamic", "megamendung", "parang", "truntum"].includes(kind)) return null;
+  const size: Record<string, [number, number]> = { wave: [60, 24], megamendung: [96, 60], islamic: [40, 40], parang: [36, 36], truntum: [44, 44] };
   const [pw, ph] = size[kind] ?? [48, 48];
   const id = `pat-${kind}`;
   return (
@@ -397,9 +570,47 @@ export function PatternBg({ kind, opacity = 0.06 }: { kind: OrnamentKind; opacit
           {kind === "wave" && <path d="M0 12q15-8 30 0t30 0" fill="none" stroke="currentColor" />}
           {kind === "islamic" && <Star8 cx={20} cy={20} r={14} />}
           {kind === "megamendung" && <Cloud x={8} y={10} s={0.9} />}
+          {kind === "parang" && <ParangBand L={36} w={1} />}
+          {kind === "truntum" && (
+            <>
+              <Truntum cx={11} cy={11} r={4} />
+              <Truntum cx={33} cy={33} r={4} />
+            </>
+          )}
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill={`url(#${id})`} />
     </svg>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Emblem: motif tunggal di atas monogram sampul                       */
+/* ------------------------------------------------------------------ */
+export function Emblem({ kind, className = "" }: { kind: OrnamentKind; className?: string }) {
+  if (kind === "gunungan") {
+    return (
+      <svg aria-hidden viewBox="0 0 80 104" className={`iv-float mx-auto h-28 w-auto ${className}`}>
+        <Gunungan cx={40} y={2} h={100} />
+      </svg>
+    );
+  }
+  if (kind === "truntum") {
+    return (
+      <svg aria-hidden viewBox="0 0 80 80" className={`iv-float mx-auto h-20 w-auto ${className}`}>
+        <Truntum cx={40} cy={40} r={22} />
+      </svg>
+    );
+  }
+  if (kind === "janur") {
+    return (
+      <svg aria-hidden viewBox="0 0 80 80" className={`iv-float mx-auto h-24 w-auto ${className}`}>
+        <path d="M6 6 Q40 22 74 6" fill="none" stroke="currentColor" strokeWidth={1.2} />
+        <Janur x={22} y={10} len={56} />
+        <Janur x={40} y={14} len={62} />
+        <Janur x={58} y={10} len={56} />
+      </svg>
+    );
+  }
+  return <Divider kind={kind} className={className} />;
 }

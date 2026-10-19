@@ -47,6 +47,8 @@ export type InvitationData = {
   giftAddress?: { recipient: string; address: string };
   music?: string; // URL mp3
   video?: string; // URL YouTube video prewedding
+  /** true = matikan animasi (ornamen bergoyang, partikel, zoom foto) untuk undangan ini */
+  noMotion?: boolean;
   closing?: string;
   liveStreamUrl?: string;
 };

@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Theme } from "@/themes/registry";
-import { themeKind, themeVars } from "@/themes/registry";
+import { themeKind, themeText, themeVars } from "@/themes/registry";
 import type { InvitationData, Person, Rsvp, WeddingEvent } from "@/lib/types";
 import { formatDateDots, formatDateLong, youtubeEmbed } from "@/lib/utils";
 import { CoverArt } from "./CoverArt";
 import { Corners, Divider, PatternBg } from "./Ornament";
 import { BottomNav, CopyButton, Countdown, Gallery, MusicToggle, useReveal } from "./interactive";
-import { FxLayer, KenBurns, MarqueeRows, ScrollHint, motionPhotos } from "./Motion";
+import { Particles } from "./Particles";
 import { RsvpWishes } from "./RsvpWishes";
 
 type Props = {
@@ -61,9 +61,9 @@ function SectionTitle({ title, theme, children }: { title: string; theme: Theme;
   );
 }
 
-function PersonCard({ p, theme, reveal = "" }: { p: Person; theme: Theme; reveal?: string }) {
+function PersonCard({ p, theme }: { p: Person; theme: Theme }) {
   return (
-    <div className={`reveal ${reveal} text-center`}>
+    <div className="reveal text-center">
       <div className="relative mx-auto w-40">
         <div className={`absolute -inset-2 border border-iv-accent ${theme.cover === "arch" ? "arch-mask" : "rounded-full"}`} />
         {p.photo ? (
@@ -89,6 +89,7 @@ function PersonCard({ p, theme, reveal = "" }: { p: Person; theme: Theme; reveal
 
 export function InvitationView({ theme, data: rawData, eventDate, guestName, invitationId, wishes, brandName }: Props) {
   const data = themeKind(theme) === "non-foto" ? stripPhotos(rawData) : rawData;
+  const tx = themeText(theme);
   const video = data.video ? youtubeEmbed(data.video) : null;
   const coverPhoto = data.coverImage || data.gallery[0];
   const [opened, setOpened] = useState(false);
@@ -134,40 +135,33 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
   const section = "relative overflow-hidden px-6 py-20";
 
   return (
-    <div style={themeVars(theme)} className="min-h-screen bg-iv-bg font-body text-iv-ink">
+    <div style={themeVars(theme)} className={`min-h-screen bg-iv-bg font-body text-iv-ink ${data.noMotion ? "" : "iv-animate"}`}>
+      {!data.noMotion && <Particles kind={theme.ornament} />}
       {data.music && <audio ref={audioRef} src={data.music} loop preload="none" />}
 
       {/* ---------------- Gerbang / sampul ---------------- */}
       {!opened && (
-        <div className={`fixed inset-0 z-50 ${leaving ? (theme.motion ? "gate-leaving-motion" : "gate-leaving") : ""}`}>
+        <div className={`fixed inset-0 z-50 ${leaving ? "gate-leaving" : ""}`}>
           <CoverArt theme={theme} data={data} dateLabel={formatDateDots(dateIso)}>
             <div className="mt-8">
-              <p className="font-body text-xs text-iv-muted">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+              <p className="font-body text-xs text-iv-muted">{tx.to}</p>
               <p className="mt-1 font-display text-2xl text-iv-ink">{guestName || "Tamu Undangan"}</p>
-              <button type="button" onClick={open} disabled={leaving} className={`mt-5 rounded-full bg-iv-primary px-7 py-3 font-body text-sm text-iv-on-primary shadow-md ${theme.motion ? "mo-pulse" : ""}`}>
-                Buka undangan
+              <button type="button" onClick={open} disabled={leaving} className="mt-5 rounded-full bg-iv-primary px-7 py-3 font-body text-sm text-iv-on-primary shadow-md">
+                {tx.open}
               </button>
             </div>
           </CoverArt>
         </div>
       )}
 
-      {/* Tema motion: partikel (kelopak/kilau/daun) melayang di atas seluruh halaman setelah undangan dibuka */}
-      {theme.motion && opened && <FxLayer fx={theme.motion.fx} count={10} fixed />}
-
       <div className="lg:flex">
         {/* -------- Panel kiri desktop: sampul tetap -------- */}
         <aside className="relative hidden h-screen flex-1 overflow-hidden lg:sticky lg:top-0 lg:block" aria-hidden>
           {coverPhoto ? (
             <>
-              {theme.motion ? (
-                <KenBurns photos={motionPhotos(data, 4)} step={7} />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={coverPhoto} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverPhoto} alt="" className="iv-kb absolute inset-0 h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              {theme.motion && <FxLayer fx={theme.motion.fx} count={14} />}
             </>
           ) : (
             <div className="absolute inset-0 bg-iv-surface">
@@ -176,7 +170,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
             </div>
           )}
           <div className={`absolute bottom-16 left-16 ${coverPhoto ? "text-white" : "text-iv-primary"}`}>
-            <p className="font-display text-sm tracking-[0.3em] opacity-80">The Wedding of</p>
+            <p className="font-display text-sm tracking-[0.3em] opacity-80">{tx.weddingOf}</p>
             <p className="mt-2 font-script text-7xl">{couple}</p>
             <p className="mt-2 font-display text-lg tracking-widest">{formatDateDots(dateIso)}</p>
           </div>
@@ -185,17 +179,10 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
         {/* -------- Kolom undangan -------- */}
         <main ref={mainRef} className="relative mx-auto w-full max-w-[30rem] pb-24 lg:mx-0 lg:w-[30rem] lg:shrink-0">
           {/* Hero */}
-          {theme.motion ? (
-            // Tema motion: hero memakai sampul bergerak yang sama; dirender saat gerbang mulai terbuka agar animasi teks terlihat
-            <section className="relative h-[100svh] overflow-hidden">
-              {(leaving || opened) && <CoverArt theme={theme} data={data} dateLabel={formatDateDots(dateIso)} />}
-              <ScrollHint />
-            </section>
-          ) : (
           <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 text-center">
             <PatternBg kind={theme.ornament} />
             <Corners kind={theme.ornament} className="text-iv-accent" />
-            <p className="reveal font-display text-sm tracking-[0.3em] text-iv-muted">The Wedding of</p>
+            <p className="reveal font-display text-sm tracking-[0.3em] text-iv-muted">{tx.weddingOf}</p>
             <h1 className="reveal mt-4 font-script text-7xl leading-[1.05] text-iv-primary">
               {first.nickname}
               <span className="block font-display text-3xl italic text-iv-accent">&</span>
@@ -203,7 +190,6 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
             </h1>
             <p className="reveal mt-6 font-display text-xl tracking-widest">{formatDateDots(dateIso)}</p>
           </section>
-          )}
 
           {/* Kutipan */}
           {data.quote && (
@@ -216,15 +202,15 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
 
           {/* Mempelai */}
           <section id="mempelai" className={section}>
-            <SectionTitle title="Bride & Groom" theme={theme}>{data.opening}</SectionTitle>
-            <PersonCard p={first} theme={theme} reveal={theme.motion ? "reveal-left" : ""} />
+            <SectionTitle title={tx.couple} theme={theme}>{data.opening}</SectionTitle>
+            <PersonCard p={first} theme={theme} />
             <p className="reveal my-10 text-center font-script text-6xl text-iv-accent">&</p>
-            <PersonCard p={second} theme={theme} reveal={theme.motion ? "reveal-right" : ""} />
+            <PersonCard p={second} theme={theme} />
           </section>
 
           {/* Countdown */}
           <section className={`${section} bg-iv-surface text-center`}>
-            <SectionTitle title="Menghitung Hari" theme={theme} />
+            <SectionTitle title={tx.countdown} theme={theme} />
             <div className="reveal"><Countdown target={eventDate} /></div>
             {data.events[0] && (
               <a href={calendarUrl(data.events[0], couple)} target="_blank" rel="noopener noreferrer" className="reveal mt-6 inline-block rounded-full border border-iv-primary px-5 py-2 font-body text-sm text-iv-primary">
@@ -235,10 +221,10 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
 
           {/* Acara */}
           <section id="acara" className={section}>
-            <SectionTitle title="Rangkaian Acara" theme={theme}>Dengan memohon rahmat Tuhan, acara akan dilaksanakan pada:</SectionTitle>
+            <SectionTitle title={tx.events} theme={theme}>Dengan memohon rahmat Tuhan, acara akan dilaksanakan pada:</SectionTitle>
             <div className="space-y-6">
               {data.events.map((ev, i) => (
-                <article key={i} className={`reveal ${theme.motion ? "reveal-zoom" : ""} relative overflow-hidden rounded-2xl border border-iv-accent/50 bg-iv-surface px-6 py-8 text-center`}>
+                <article key={i} className="reveal relative overflow-hidden rounded-2xl border border-iv-accent/50 bg-iv-surface px-6 py-8 text-center">
                   <Corners kind={theme.ornament} className="!h-16 !w-16 text-iv-accent/70" />
                   <h3 className="font-script text-4xl text-iv-primary">{ev.title}</h3>
                   <p className="mt-3 font-display text-lg capitalize">{formatDateLong(ev.date)}</p>
@@ -266,7 +252,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
           {/* Love story */}
           {data.stories.length > 0 && (
             <section id="cerita" className={`${section} bg-iv-surface`}>
-              <SectionTitle title="Kisah Kami" theme={theme} />
+              <SectionTitle title={tx.story} theme={theme} />
               <ol className="relative ml-3 border-l border-iv-accent/60">
                 {data.stories.map((s, i) => (
                   <li key={i} className="reveal relative mb-10 pl-6 last:mb-0">
@@ -287,7 +273,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
           {/* Galeri */}
           {(data.gallery.length > 0 || video) && (
             <section id="galeri" className={section}>
-              <SectionTitle title="Galeri" theme={theme} />
+              <SectionTitle title={tx.gallery} theme={theme} />
               {video && (
                 <div className="reveal mb-4 aspect-video overflow-hidden rounded-lg border border-iv-accent/50">
                   <iframe
@@ -300,7 +286,6 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
                   />
                 </div>
               )}
-              {theme.motion && <MarqueeRows images={data.gallery} />}
               {data.gallery.length > 0 && <Gallery images={data.gallery} />}
             </section>
           )}
@@ -308,7 +293,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
           {/* Hadiah */}
           {(data.gifts.length > 0 || data.giftAddress) && (
             <section id="hadiah" className={`${section} bg-iv-surface`}>
-              <SectionTitle title="Tanda Kasih" theme={theme}>
+              <SectionTitle title={tx.gift} theme={theme}>
                 Doa restu Anda adalah karunia terbesar bagi kami. Bila ingin memberi tanda kasih, dapat melalui:
               </SectionTitle>
               <div className="space-y-4">
@@ -334,7 +319,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
 
           {/* RSVP & ucapan */}
           <section id="ucapan" className={section}>
-            <SectionTitle title="Ucapan & Doa" theme={theme}>Mohon konfirmasi kehadiran dan kirimkan doa terbaik untuk kami.</SectionTitle>
+            <SectionTitle title={tx.wishes} theme={theme}>Mohon konfirmasi kehadiran dan kirimkan doa terbaik untuk kami.</SectionTitle>
             <RsvpWishes invitationId={invitationId} guestName={guestName} initial={wishes} />
           </section>
 
@@ -343,7 +328,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
             <PatternBg kind={theme.ornament} />
             <Corners kind={theme.ornament} className="text-iv-accent" />
             <p className="reveal mx-auto max-w-sm font-body text-sm leading-relaxed">{data.closing}</p>
-            <p className="reveal mt-6 font-body text-sm text-iv-muted">Kami yang berbahagia,</p>
+            <p className="reveal mt-6 font-body text-sm text-iv-muted">{tx.hosts}</p>
             <p className="reveal mt-2 font-script text-6xl text-iv-primary">{couple}</p>
             <p className="mt-16 font-body text-[11px] text-iv-muted">Dibuat dengan {brandName}</p>
           </section>

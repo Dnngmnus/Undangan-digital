@@ -4,11 +4,9 @@
  * perbedaannya hanya di token: palet, font, ornamen, dan layout cover.
  */
 
-export type OrnamentKind = "botanical" | "deco" | "kawung" | "line" | "boho" | "wave" | "floral" | "islamic" | "tropical" | "megamendung" | "watercolor";
-export type CoverLayout = "arch" | "frame" | "full" | "split" | "circle" | "polaroid" | "magazine" | "cinema" | "reel" | "stack";
-/** Efek partikel di atas sampul/undangan tema motion. */
-export type MotionFx = "petals" | "sparkle" | "leaves" | "bokeh";
-export type ThemeCategory = "Floral" | "Elegan" | "Minimalis" | "Tradisional" | "Rustic" | "Gelap";
+export type OrnamentKind = "botanical" | "deco" | "kawung" | "line" | "boho" | "wave" | "floral" | "islamic" | "tropical" | "megamendung" | "watercolor" | "gunungan" | "parang" | "truntum" | "janur";
+export type CoverLayout = "arch" | "frame" | "full" | "split" | "circle" | "polaroid" | "magazine" | "monogram";
+export type ThemeCategory = "Floral" | "Elegan" | "Minimalis" | "Jawa" | "Tradisional" | "Rustic" | "Gelap";
 
 export type Theme = {
   id: string;
@@ -31,34 +29,13 @@ export type Theme = {
   kind?: ThemeKind;
   /** "mono": foto sampul ditampilkan hitam-putih (tema monokrom). */
   photoTone?: "mono";
+  /** "jawa": judul bagian memakai bahasa Jawa (krama). */
+  labels?: "jawa";
   badge?: "Baru" | "Terlaris";
-  /** Tema Motion: foto bergerak (cover cinema/reel/stack) + efek partikel + animasi buka. */
-  motion?: { fx: MotionFx };
 };
 
 export type ThemeKind = "foto" | "non-foto";
 export const themeKind = (t: Theme): ThemeKind => t.kind ?? "foto";
-
-/** Tab di katalog: tema motion punya tab sendiri; sisanya mengikuti `kind`. */
-export type CatalogTab = "motion" | ThemeKind;
-export const catalogTab = (t: Theme): CatalogTab => (t.motion ? "motion" : themeKind(t));
-
-const COVER_TAG: Partial<Record<CoverLayout, string>> = {
-  cinema: "Foto zoom perlahan",
-  reel: "Foto bergulir",
-  stack: "Foto bergantian",
-};
-const FX_TAG: Record<MotionFx, string> = {
-  petals: "Kelopak jatuh",
-  sparkle: "Kilau bintang",
-  leaves: "Daun melayang",
-  bokeh: "Cahaya lembut",
-};
-/** Label singkat "apa yang bergerak" untuk kartu katalog (bahasa awam). */
-export function motionTags(t: Theme): string[] {
-  if (!t.motion) return [];
-  return [COVER_TAG[t.cover], FX_TAG[t.motion.fx], "Animasi saat dibuka"].filter(Boolean) as string[];
-}
 
 export const THEMES: Theme[] = [
   {
@@ -96,7 +73,7 @@ export const THEMES: Theme[] = [
   {
     id: "jawa-klasik",
     name: "Jawa Klasik",
-    category: "Tradisional",
+    category: "Jawa",
     description: "Cokelat sogan dan emas dengan motif kawung. Cocok untuk adat Jawa.",
     palette: { bg: "#2A1C14", surface: "#3A281D", ink: "#F1E3C6", muted: "#C2AD86", primary: "#C08E36", onPrimary: "#2A1C14", accent: "#D9B46A" },
     fonts: { script: "Alex Brush", display: "Cinzel", body: "Marcellus" },
@@ -158,7 +135,7 @@ export const THEMES: Theme[] = [
   {
     id: "marun-kebaya",
     name: "Marun Kebaya",
-    category: "Tradisional",
+    category: "Jawa",
     description: "Merah marun dan emas, motif kawung. Nuansa kebaya dan pelaminan.",
     palette: { bg: "#4A1420", surface: "#5C1B2A", ink: "#F6E7D4", muted: "#D8B9A3", primary: "#D8A848", onPrimary: "#4A1420", accent: "#E8C27A" },
     fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
@@ -199,7 +176,7 @@ export const THEMES: Theme[] = [
   {
     id: "melati-putih",
     name: "Melati Putih",
-    category: "Tradisional",
+    category: "Jawa",
     description: "Putih gading dan hijau daun pandan dengan motif kawung. Tanpa foto.",
     palette: { bg: "#F4F3EA", surface: "#FFFFFA", ink: "#24372B", muted: "#66786B", primary: "#2F5D45", onPrimary: "#FFFFFA", accent: "#B49A5A" },
     fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
@@ -257,7 +234,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Great Vibes", display: "Cormorant Garamond", body: "Lora" },
     ornament: "floral",
     cover: "circle",
-    badge: "Baru",
   },
   {
     id: "peony-cream",
@@ -298,7 +274,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Great Vibes", display: "Playfair Display", body: "Lora" },
     ornament: "watercolor",
     cover: "circle",
-    badge: "Baru",
   },
   {
     id: "nur-emerald",
@@ -330,7 +305,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
     ornament: "deco",
     cover: "magazine",
-    badge: "Baru",
   },
   {
     id: "noir-editorial",
@@ -372,7 +346,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Alex Brush", display: "Cinzel", body: "Marcellus" },
     ornament: "megamendung",
     cover: "circle",
-    badge: "Baru",
   },
   {
     id: "mendung-merah",
@@ -394,94 +367,149 @@ export const THEMES: Theme[] = [
     ornament: "boho",
     cover: "polaroid",
   },
-  /* ---------------- Tema Motion ---------------- */
   {
-    id: "sinema-emas",
-    name: "Sinema Emas",
-    category: "Elegan",
-    description: "Foto prewedding berganti seperti film dengan zoom perlahan. Biru malam dan kilau emas.",
-    palette: { bg: "#0E1A2B", surface: "#15263D", ink: "#F4EBD6", muted: "#B9AE95", primary: "#D2AE62", onPrimary: "#0E1A2B", accent: "#E9D29A" },
-    fonts: { script: "Great Vibes", display: "Cinzel", body: "Marcellus" },
-    ornament: "deco",
-    cover: "cinema",
-    motion: { fx: "sparkle" },
+    id: "kayon-indigo",
+    name: "Kayon Indigo",
+    category: "Jawa",
+    description: "Gunungan wayang emas di atas biru indigo, sampul monogram. Tanpa foto.",
+    palette: { bg: "#1B2447", surface: "#243059", ink: "#F1EBDD", muted: "#B5AEC4", primary: "#D9B566", onPrimary: "#1B2447", accent: "#A9B6E0" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "gunungan",
+    cover: "monogram",
+    kind: "non-foto",
+    labels: "jawa",
     badge: "Baru",
   },
   {
-    id: "sakura-melayang",
-    name: "Sakura Melayang",
-    category: "Floral",
-    description: "Foto sinematik dengan kelopak merah muda berjatuhan pelan. Lembut dan romantis.",
-    palette: { bg: "#FBEFF0", surface: "#FFF8F8", ink: "#4B2B33", muted: "#8E6870", primary: "#B8626F", onPrimary: "#FFF8F8", accent: "#E7AEB6" },
-    fonts: { script: "Parisienne", display: "Playfair Display", body: "Lora" },
-    ornament: "floral",
-    cover: "cinema",
-    motion: { fx: "petals" },
-    badge: "Baru",
-  },
-  {
-    id: "sinema-nusantara",
-    name: "Sinema Nusantara",
-    category: "Tradisional",
-    description: "Slideshow foto bernuansa sogan dengan kilau emas. Cocok untuk adat Jawa modern.",
-    palette: { bg: "#2A1C14", surface: "#3A281D", ink: "#F1E3C6", muted: "#C2AD86", primary: "#C08E36", onPrimary: "#2A1C14", accent: "#D9B46A" },
+    id: "truntum-gading",
+    name: "Truntum Gading",
+    category: "Jawa",
+    description: "Motif truntum di atas gading, sampul monogram. Tanpa foto.",
+    palette: { bg: "#F6F0E1", surface: "#FFFBF2", ink: "#3E2C1E", muted: "#8A7660", primary: "#8B5E2B", onPrimary: "#FFFBF2", accent: "#C7A15A" },
     fonts: { script: "Alex Brush", display: "Cinzel", body: "Marcellus" },
-    ornament: "kawung",
-    cover: "cinema",
-    motion: { fx: "sparkle" },
+    ornament: "truntum",
+    cover: "monogram",
+    kind: "non-foto",
+    labels: "jawa",
+  },
+  {
+    id: "keraton-beludru",
+    name: "Keraton Beludru",
+    category: "Jawa",
+    description: "Hitam beludru, emas, dan aksen merah. Gunungan dan monogram ala keraton.",
+    palette: { bg: "#16120E", surface: "#211B15", ink: "#F3E7CF", muted: "#BFAE8E", primary: "#D2A548", onPrimary: "#16120E", accent: "#B5473F" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "gunungan",
+    cover: "monogram",
+    labels: "jawa",
     badge: "Baru",
   },
   {
-    id: "reel-sage",
-    name: "Reel Sage",
-    category: "Minimalis",
-    description: "Tiga kolom foto bergulir naik-turun di belakang kartu nama. Hijau sage yang segar.",
-    palette: { bg: "#EEF1E8", surface: "#FBFCF8", ink: "#2F3B2F", muted: "#6B7A66", primary: "#4F6F52", onPrimary: "#FBFCF8", accent: "#C2A169" },
-    fonts: { script: "Pinyon Script", display: "Cormorant Garamond", body: "Lora" },
-    ornament: "botanical",
-    cover: "reel",
-    motion: { fx: "leaves" },
+    id: "wayang-ungu",
+    name: "Wayang Ungu",
+    category: "Jawa",
+    description: "Ungu tua dan emas dengan gunungan wayang, foto bulat.",
+    palette: { bg: "#2B1838", surface: "#3A2249", ink: "#F3E6F0", muted: "#C4A9C8", primary: "#E0BA6A", onPrimary: "#2B1838", accent: "#B58AC9" },
+    fonts: { script: "Great Vibes", display: "Cinzel", body: "Marcellus" },
+    ornament: "gunungan",
+    cover: "circle",
+    labels: "jawa",
+  },
+  {
+    id: "sekar-truntum",
+    name: "Sekar Truntum",
+    category: "Jawa",
+    description: "Merah muda dan emas bermotif truntum, lambang cinta yang tumbuh kembali.",
+    palette: { bg: "#F7E9E6", surface: "#FFF7F5", ink: "#4E2B2E", muted: "#94706F", primary: "#A8545F", onPrimary: "#FFF7F5", accent: "#C9A15E" },
+    fonts: { script: "Great Vibes", display: "Cinzel", body: "Lora" },
+    ornament: "truntum",
+    cover: "arch",
+    labels: "jawa",
     badge: "Baru",
   },
   {
-    id: "reel-midnight",
-    name: "Reel Midnight",
-    category: "Gelap",
-    description: "Foto bergulir di latar gelap dengan cahaya bokeh rose gold. Modern dan dramatis.",
-    palette: { bg: "#121214", surface: "#1B1B1F", ink: "#F3EDE7", muted: "#A9A09A", primary: "#D8A58F", onPrimary: "#121214", accent: "#E8C5B3" },
-    fonts: { script: "Italiana", display: "Playfair Display", body: "Josefin Sans" },
-    ornament: "line",
-    cover: "reel",
-    motion: { fx: "bokeh" },
-    badge: "Baru",
+    id: "truntum-toska",
+    name: "Truntum Toska",
+    category: "Jawa",
+    description: "Toska dan emas dengan taburan truntum, foto penuh layar.",
+    palette: { bg: "#E5F0EE", surface: "#F6FBFA", ink: "#163C3A", muted: "#5C7E7B", primary: "#1F6D69", onPrimary: "#F6FBFA", accent: "#C9A45A" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "truntum",
+    cover: "full",
+    labels: "jawa",
   },
   {
-    id: "tumpukan-kenangan",
-    name: "Tumpukan Kenangan",
-    category: "Rustic",
-    description: "Tumpukan foto polaroid yang berganti satu per satu. Hangat dan santai.",
-    palette: { bg: "#F4E6D6", surface: "#FBF4EC", ink: "#4A2F22", muted: "#8B6A57", primary: "#9C5B3B", onPrimary: "#FBF4EC", accent: "#D9A673" },
-    fonts: { script: "Sacramento", display: "DM Serif Display", body: "Josefin Sans" },
-    ornament: "boho",
-    cover: "stack",
-    motion: { fx: "bokeh" },
-    badge: "Baru",
+    id: "parang-ijo",
+    name: "Parang Ijo Botol",
+    category: "Jawa",
+    description: "Hijau botol dan emas bermotif parang, foto bulat.",
+    palette: { bg: "#12352B", surface: "#18443A", ink: "#F0E9D6", muted: "#AFC2B5", primary: "#D7B46A", onPrimary: "#12352B", accent: "#8FB79F" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "parang",
+    cover: "circle",
+    labels: "jawa",
   },
   {
-    id: "aurora-lilac",
-    name: "Aurora Lilac",
-    category: "Floral",
-    description: "Foto bertumpuk yang berganti dengan kilau lembut. Ungu lilac yang manis.",
-    palette: { bg: "#EEEAF4", surface: "#FBF9FE", ink: "#3B3352", muted: "#7A7191", primary: "#7B6AA0", onPrimary: "#FBF9FE", accent: "#C8B6E2" },
-    fonts: { script: "Parisienne", display: "Cormorant Garamond", body: "Lora" },
-    ornament: "botanical",
-    cover: "stack",
-    motion: { fx: "sparkle" },
-    badge: "Baru",
+    id: "janur-kuning",
+    name: "Janur Kuning",
+    category: "Jawa",
+    description: "Kuning janur dan hijau daun, untaian janur menggantung. Ceria untuk adat Jawa.",
+    palette: { bg: "#F8F1D9", surface: "#FFFBEA", ink: "#3A3A1C", muted: "#7C7B57", primary: "#6F7F2A", onPrimary: "#FFFBEA", accent: "#D7B23B" },
+    fonts: { script: "Sacramento", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "janur",
+    cover: "arch",
+    labels: "jawa",
   },
 ];
 
-export const CATEGORIES: ThemeCategory[] = ["Floral", "Elegan", "Minimalis", "Tradisional", "Rustic", "Gelap"];
+export const CATEGORIES: ThemeCategory[] = ["Jawa", "Floral", "Elegan", "Minimalis", "Tradisional", "Rustic", "Gelap"];
+
+/** Teks tetap undangan, mengikuti `theme.labels`. Isi (nama, acara, ucapan) tetap dari data. */
+export type ThemeText = {
+  weddingOf: string;
+  to: string;
+  open: string;
+  couple: string;
+  countdown: string;
+  events: string;
+  story: string;
+  gallery: string;
+  gift: string;
+  wishes: string;
+  hosts: string;
+};
+
+const TEXT_ID: ThemeText = {
+  weddingOf: "The Wedding of",
+  to: "Kepada Yth. Bapak/Ibu/Saudara/i",
+  open: "Buka undangan",
+  couple: "Bride & Groom",
+  countdown: "Menghitung Hari",
+  events: "Rangkaian Acara",
+  story: "Kisah Kami",
+  gallery: "Galeri",
+  gift: "Tanda Kasih",
+  wishes: "Ucapan & Doa",
+  hosts: "Kami yang berbahagia,",
+};
+
+const TEXT_JAWA: ThemeText = {
+  weddingOf: "Pawiwahan",
+  to: "Katur dhumateng Bapak/Ibu/Sedherek",
+  open: "Buka undangan",
+  couple: "Temanten",
+  countdown: "Ngetang Dinten",
+  events: "Rantaman Adicara",
+  story: "Lelampahan Tresna",
+  gallery: "Kenangan",
+  gift: "Pisungsung",
+  wishes: "Pangestu lan Donga",
+  hosts: "Ingkang kagungan kersa,",
+};
+
+export function themeText(t: Theme): ThemeText {
+  return t.labels === "jawa" ? TEXT_JAWA : TEXT_ID;
+}
 
 export function getTheme(id: string): Theme | undefined {
   return THEMES.find((t) => t.id === id);

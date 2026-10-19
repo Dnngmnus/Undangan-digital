@@ -22,6 +22,22 @@ export default async function ThemePreviewPage({ params, searchParams }: Params)
   // demo memakai lagu pertama di pustaka (public/music) bila ada
   const [track] = await getMusicLibrary();
   if (track) demo.data.music = track.url;
+  // demo tema Jawa: tambahkan Ngunduh Mantu seperti umumnya pernikahan adat Jawa
+  if (theme.labels === "jawa") {
+    const d = new Date(`${demo.data.events[0].date}T00:00:00`);
+    d.setDate(d.getDate() + 7);
+    const p = (n: number) => String(n).padStart(2, "0");
+    demo.data.events.push({
+      title: "Ngunduh Mantu",
+      date: `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`,
+      timeStart: "16.00",
+      timeEnd: "21.00",
+      timezone: "WIB",
+      venue: "Kediaman Mempelai Pria",
+      address: "Dsn. Krajan RT 02 RW 01, Kec. Ngadiluwih, Kab. Kediri",
+      mapsUrl: "https://maps.google.com/?q=Ngadiluwih+Kediri",
+    });
+  }
 
   return (
     <>

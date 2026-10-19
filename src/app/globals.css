@@ -104,205 +104,81 @@ body {
   }
 }
 
-/* ===============================================================
-   TEMA MOTION — semua animasi murni CSS.
-   Otomatis mati bila pengguna memilih "reduce motion" (blok paling bawah).
-   =============================================================== */
-
-/* Slideshow Ken Burns: 4 lapisan, tiap lapisan tampil 1/4 siklus (delay = i × step) */
-@keyframes mo-kb {
-  0% { opacity: 0; transform: scale(1) translate3d(0, 0, 0); }
-  6% { opacity: 1; }
-  25% { opacity: 1; }
-  31% { opacity: 0; transform: scale(1.16) translate3d(var(--dx), var(--dy), 0); }
-  100% { opacity: 0; transform: scale(1.16) translate3d(var(--dx), var(--dy), 0); }
-}
-.mo-kb {
-  opacity: 0;
-  animation: mo-kb 24s linear infinite both;
-  will-change: transform, opacity;
-}
-
-/* Partikel: pembungkus setinggi layar turun/naik, isinya berputar */
-@keyframes mo-fall {
-  0% { opacity: 0; transform: translate3d(0, -10%, 0); }
-  8% { opacity: 0.95; }
-  85% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate3d(var(--drift), 104%, 0); }
-}
-@keyframes mo-float-up {
-  0% { opacity: 0; transform: translate3d(0, 104%, 0); }
-  15% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translate3d(var(--drift), -10%, 0); }
-}
-@keyframes mo-flutter {
-  from { transform: rotate(var(--rot)) rotateY(0deg); }
-  to { transform: rotate(calc(var(--rot) + 110deg)) rotateY(180deg); }
-}
-@keyframes mo-twinkle {
-  0%, 100% { transform: scale(0.4); opacity: 0.4; }
-  50% { transform: scale(1.3); opacity: 1; }
-}
-.mo-fx {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  opacity: 0;
-  animation: mo-fall 14s linear infinite both;
-  will-change: transform;
-}
-.mo-fx-dot {
-  display: block;
-  width: 100%;
-}
-.mo-fx-petals .mo-fx-dot,
-.mo-fx-leaves .mo-fx-dot {
-  border-radius: 0 100% 0 100%;
-  animation: mo-flutter 3.6s ease-in-out infinite alternate;
-}
-.mo-fx-petals .mo-fx-dot {
-  background: color-mix(in oklab, var(--accent) 78%, white);
-  box-shadow: inset -2px -2px 4px color-mix(in oklab, var(--primary) 35%, transparent);
-}
-.mo-fx-leaves .mo-fx-dot {
-  background: color-mix(in oklab, var(--primary) 70%, var(--accent));
-}
-.mo-fx-sparkle,
-.mo-fx-bokeh {
-  animation-name: mo-float-up;
-}
-.mo-fx-sparkle .mo-fx-dot {
-  border-radius: 999px;
-  background: var(--accent);
-  box-shadow: 0 0 8px 2px color-mix(in oklab, var(--accent) 80%, transparent);
-  animation: mo-twinkle 2.4s ease-in-out infinite;
-}
-.mo-fx-bokeh .mo-fx-dot {
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--accent) 55%, transparent);
-  filter: blur(2px);
-}
-
-/* Reel: kolom foto bergulir; dua salinan konten → geser -50% = satu putaran penuh */
-@keyframes mo-reel {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(0, -50%, 0); }
-}
-.mo-reel {
-  animation: mo-reel 30s linear infinite;
-  will-change: transform;
-}
-.mo-reel-rev {
-  animation-direction: reverse;
-}
-
-/* Marquee galeri (horizontal) */
-@keyframes mo-marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-.mo-marquee {
-  animation: mo-marquee 30s linear infinite;
-  will-change: transform;
-}
-.mo-marquee-rev {
-  animation-direction: reverse;
-}
-
-/* Tumpukan polaroid: kartu teratas terbang keluar lalu pindah ke belakang */
-@keyframes mo-stack {
-  0%, 20% { transform: translate(0, 0) rotate(-3deg) scale(1); opacity: 1; z-index: 4; }
-  25% { transform: translate(125%, -24px) rotate(24deg) scale(1); opacity: 0; z-index: 4; }
-  25.01% { transform: translate(5px, 36px) rotate(5deg) scale(0.85); opacity: 0; z-index: 1; }
-  30%, 45% { transform: translate(5px, 36px) rotate(5deg) scale(0.85); opacity: 1; z-index: 1; }
-  50%, 70% { transform: translate(-6px, 26px) rotate(-5deg) scale(0.9); opacity: 1; z-index: 2; }
-  75%, 95% { transform: translate(6px, 14px) rotate(3deg) scale(0.95); opacity: 1; z-index: 3; }
-  100% { transform: translate(0, 0) rotate(-3deg) scale(1); opacity: 1; z-index: 4; }
-}
-.mo-card {
-  animation: mo-stack 12.8s ease-in-out infinite both;
-  transform-origin: 50% 80%;
-}
-
-/* Teks masuk: huruf demi huruf, dan blok naik pelan */
-@keyframes mo-char-in {
-  from { opacity: 0; transform: translateY(0.55em) rotate(5deg); filter: blur(6px); }
-  to { opacity: 1; transform: none; filter: blur(0); }
-}
-.mo-char {
-  display: inline-block;
-  animation: mo-char-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-@keyframes mo-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: none; }
-}
-.mo-rise {
-  animation: mo-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: var(--d, 0s);
-}
-
-/* Tombol buka berdenyut + petunjuk geser */
-@keyframes mo-pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 55%, transparent); }
-  70% { box-shadow: 0 0 0 14px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-.mo-pulse {
-  animation: mo-pulse 2s ease-out infinite;
-}
-@keyframes mo-bounce {
-  0%, 100% { transform: translateY(0); opacity: 0.6; }
-  50% { transform: translateY(6px); opacity: 1; }
-}
-.mo-bounce {
-  animation: mo-bounce 1.8s ease-in-out infinite;
-}
-
-/* Gerbang tema motion: zoom keluar + memudar (bukan geser ke atas) */
-@keyframes gate-zoom {
-  to { transform: scale(1.14); opacity: 0; filter: blur(8px); }
-}
-.gate-leaving-motion {
-  animation: gate-zoom 1.1s cubic-bezier(0.7, 0, 0.3, 1) forwards;
-}
-
-/* Varian reveal saat scroll (dipakai tema motion). :not(.is-visible) agar menang atas translateY bawaan. */
-.reveal-left:not(.is-visible) { transform: translateX(-44px); }
-.reveal-right:not(.is-visible) { transform: translateX(44px); }
-.reveal-zoom:not(.is-visible) { transform: scale(0.92); }
-
-/* Dijeda: thumbnail di luar layar atau saat pengguna menekan "Jeda animasi" */
-.mo-paused,
-.mo-paused * {
-  animation-play-state: paused !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mo-kb,
-  .mo-fx,
-  .mo-reel,
-  .mo-marquee,
-  .mo-char,
-  .mo-rise,
-  .mo-pulse,
-  .mo-bounce,
-  .mo-fx-dot {
-    animation: none !important;
-  }
-  .mo-fx { display: none; }
-  .mo-card { animation: none; }
-  .mo-card:not(:first-child) { display: none; }
-  .gate-leaving-motion { animation-duration: 0.01s; }
-  .reveal-left:not(.is-visible),
-  .reveal-right:not(.is-visible),
-  .reveal-zoom:not(.is-visible) { transform: none; }
-}
-
 /* Input standar di dashboard admin */
 @layer components {
   .field {
     @apply w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm focus:border-moss focus:outline-none;
   }
+}
+
+/* ===================================================================
+   Animasi undangan — hanya aktif di dalam .iv-animate (halaman undangan),
+   sehingga thumbnail katalog tetap statis dan ringan.
+   =================================================================== */
+
+/* ornamen sudut bergoyang, berporos di titik sudutnya */
+.iv-animate .iv-sway {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: iv-sway 7s ease-in-out infinite alternate;
+}
+@keyframes iv-sway {
+  from { transform: rotate(-2.5deg); }
+  to { transform: rotate(2.5deg); }
+}
+
+/* foto layar penuh: zoom perlahan (Ken Burns) */
+.iv-animate .iv-kb {
+  transform-origin: 50% 40%;
+  animation: iv-kb 18s ease-in-out infinite alternate;
+}
+@keyframes iv-kb {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+/* bingkai foto lengkung/bulat: bernapas pelan */
+.iv-animate .iv-breathe { animation: iv-breathe 6s ease-in-out infinite alternate; }
+@keyframes iv-breathe {
+  from { transform: scale(1); }
+  to { transform: scale(1.025); }
+}
+
+/* polaroid: bergoyang di sekitar kemiringan aslinya (-3°) */
+.iv-animate .iv-tilt { animation: iv-tilt 5s ease-in-out infinite alternate; }
+@keyframes iv-tilt {
+  from { transform: rotate(-3.5deg); }
+  to { transform: rotate(-1deg); }
+}
+
+/* gunungan / emblem melayang */
+.iv-animate .iv-float { animation: iv-float 4.5s ease-in-out infinite alternate; }
+@keyframes iv-float {
+  from { transform: translateY(-4px) rotate(-1.5deg); }
+  to { transform: translateY(4px) rotate(1.5deg); }
+}
+
+/* partikel berjatuhan (kelopak, daun, kilau) */
+.iv-particle {
+  position: absolute;
+  top: 0;
+  will-change: transform, opacity;
+  animation-name: iv-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes iv-fall {
+  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: var(--o, 0.8); }
+  85% { opacity: var(--o, 0.8); }
+  100% { transform: translate3d(var(--dx, 40px), 112vh, 0) rotate(var(--rot, 360deg)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-animate .iv-sway,
+  .iv-animate .iv-kb,
+  .iv-animate .iv-breathe,
+  .iv-animate .iv-tilt,
+  .iv-animate .iv-float { animation: none; }
+  .iv-particles { display: none; }
 }

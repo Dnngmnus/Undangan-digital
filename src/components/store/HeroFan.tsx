@@ -7,9 +7,9 @@ import { THEMES, themeVars, type Theme } from "@/themes/registry";
 import { PhoneFrame } from "./PhoneFrame";
 
 const pick = (ids: string[]) => ids.map((id) => THEMES.find((t) => t.id === id)).filter(Boolean) as Theme[];
-const LEFT = pick(["reel-midnight"])[0];
-const RIGHT = pick(["tumpukan-kenangan"])[0];
-const CENTER = pick(["sinema-emas", "sakura-melayang", "reel-sage", "sinema-nusantara", "aurora-lilac"]);
+const LEFT = pick(["royal-navy"])[0];
+const RIGHT = pick(["dusty-rose"])[0];
+const CENTER = pick(["sage-botani", "jawa-klasik", "emerald-night", "sakura-blush", "champagne"]);
 
 function Cover({ t, data, dateLabel }: { t: Theme; data: InvitationData; dateLabel: string }) {
   return (
@@ -19,7 +19,7 @@ function Cover({ t, data, dateLabel }: { t: Theme; data: InvitationData; dateLab
   );
 }
 
-/** Tiga ponsel berjajar; sampulnya bergerak (tema motion) dan ponsel tengah bergantian antar tema. */
+/** Tiga ponsel berjajar; ponsel tengah berganti tema (satu-satunya animasi otomatis di halaman). */
 export function HeroFan({ data, dateLabel }: { data: InvitationData; dateLabel: string }) {
   const [i, setI] = useState(0);
 

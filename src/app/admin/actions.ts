@@ -14,10 +14,25 @@ export async function login(_prev: { error?: string }, fd: FormData): Promise<{ 
   if (!supabase) return { error: "Supabase belum dikonfigurasi. Isi .env.local terlebih dahulu." };
 
   const { error } = await supabase.auth.signInWithPassword({
-    email: String(fd.get("email") ?? ""),
+    email: String(fd.get("email") ?? "").trim().toLowerCase(),
     password: String(fd.get("password") ?? ""),
   });
-  if (error) return { error: "Email atau password salah." };
+  if (error) {
+    // Tampilkan penyebab sebenarnya — pesan generik menyulitkan troubleshooting
+    if (error.code === "invalid_credentials") {
+      return { error: "Email atau password salah. Cek user di Supabase → Authentication → Users." };
+    }
+    if (error.code === "email_not_confirmed") {
+      return { error: "Email belum dikonfirmasi. Hapus user di Supabase → Authentication → Users, lalu buat ulang dengan mencentang Auto Confirm User." };
+    }
+    if (/api key/i.test(error.message)) {
+      return { error: "Kunci Supabase tidak valid. Periksa NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY di .env.production lalu update ulang." };
+    }
+    if (error.name === "AuthRetryableFetchError" || error.status === 0) {
+      return { error: "Server tidak bisa menghubungi Supabase. Periksa koneksi internet STB dan NEXT_PUBLIC_SUPABASE_URL." };
+    }
+    return { error: `Gagal login: ${error.message}` };
+  }
 
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (!isAdmin) {

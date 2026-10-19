@@ -8,7 +8,7 @@ import { CoverArt } from "@/components/invitation/CoverArt";
 import { PhoneFrame } from "@/components/store/PhoneFrame";
 import type { GiftAccount, InvitationData, Person, StoryItem, WeddingEvent } from "@/lib/types";
 import { formatDateDots, slugify, youtubeEmbed } from "@/lib/utils";
-import { THEMES, catalogTab, getThemeOrDefault, themeKind, themeVars } from "@/themes/registry";
+import { THEMES, getThemeOrDefault, themeKind, themeVars } from "@/themes/registry";
 import type { Track } from "@/lib/music";
 import { MediaField, uploadMedia } from "./MediaField";
 
@@ -131,7 +131,7 @@ export function InvitationEditor({ initial, music = [] }: { initial: EditorIniti
             <label className="block">
               <span className="mb-1 block text-sm text-ink-soft">Tema</span>
               <select value={themeId} onChange={(e) => setThemeId(e.target.value)} className="field">
-                {THEMES.map((t) => <option key={t.id} value={t.id}>{t.name} ({catalogTab(t) === "motion" ? "Motion" : themeKind(t) === "non-foto" ? "Non Foto" : t.category})</option>)}
+                {THEMES.map((t) => <option key={t.id} value={t.id}>{t.name} ({themeKind(t) === "non-foto" ? "Non Foto" : t.category})</option>)}
               </select>
             </label>
             <label className="block">
@@ -146,6 +146,10 @@ export function InvitationEditor({ initial, music = [] }: { initial: EditorIniti
           <label className="flex items-center gap-3">
             <input type="checkbox" checked={Boolean(d.groomFirst)} onChange={(e) => set("groomFirst", e.target.checked)} className="h-4 w-4 accent-moss" />
             <span className="text-sm">Tampilkan mempelai pria lebih dulu</span>
+          </label>
+          <label className="flex items-center gap-3">
+            <input type="checkbox" checked={!d.noMotion} onChange={(e) => set("noMotion", !e.target.checked)} className="h-4 w-4 accent-moss" />
+            <span className="text-sm">Animasi bergerak (ornamen bergoyang, kelopak/kilau berjatuhan, foto zoom perlahan)</span>
           </label>
         </Section>
 
