@@ -7,7 +7,7 @@ import { CoverArt } from "@/components/invitation/CoverArt";
 import { ADDONS, PACKAGES, PROMO, getPackage } from "@/lib/catalog";
 import type { InvitationData } from "@/lib/types";
 import { rupiah } from "@/lib/utils";
-import { THEMES, getThemeOrDefault, themeKind, themeVars } from "@/themes/registry";
+import { THEMES, catalogTab, getThemeOrDefault, themeVars } from "@/themes/registry";
 import { PhoneFrame } from "./PhoneFrame";
 
 type Props = { initialTheme: string; initialPackage: string; demo: InvitationData; dateLabel: string };
@@ -66,9 +66,9 @@ export function OrderForm({ initialTheme, initialPackage, demo, dateLabel }: Pro
         <fieldset>
           <legend className="font-semibold">Tema</legend>
           <select name="theme" value={themeId} onChange={(e) => setThemeId(e.target.value)} className={`${input} mt-2`}>
-            {(["foto", "non-foto"] as const).map((k) => (
-              <optgroup key={k} label={k === "foto" ? "Tema Foto" : "Tema Non Foto"}>
-                {THEMES.filter((t) => themeKind(t) === k).map((t) => (
+            {(["motion", "foto", "non-foto"] as const).map((k) => (
+              <optgroup key={k} label={k === "motion" ? "Tema Motion (foto bergerak)" : k === "foto" ? "Tema Foto" : "Tema Non Foto"}>
+                {THEMES.filter((t) => catalogTab(t) === k).map((t) => (
                   <option key={t.id} value={t.id}>{t.name} ({t.category})</option>
                 ))}
               </optgroup>

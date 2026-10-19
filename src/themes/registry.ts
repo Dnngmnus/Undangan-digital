@@ -5,7 +5,9 @@
  */
 
 export type OrnamentKind = "botanical" | "deco" | "kawung" | "line" | "boho" | "wave" | "floral" | "islamic" | "tropical" | "megamendung" | "watercolor";
-export type CoverLayout = "arch" | "frame" | "full" | "split" | "circle" | "polaroid" | "magazine";
+export type CoverLayout = "arch" | "frame" | "full" | "split" | "circle" | "polaroid" | "magazine" | "cinema" | "reel" | "stack";
+/** Efek partikel di atas sampul/undangan tema motion. */
+export type MotionFx = "petals" | "sparkle" | "leaves" | "bokeh";
 export type ThemeCategory = "Floral" | "Elegan" | "Minimalis" | "Tradisional" | "Rustic" | "Gelap";
 
 export type Theme = {
@@ -30,10 +32,33 @@ export type Theme = {
   /** "mono": foto sampul ditampilkan hitam-putih (tema monokrom). */
   photoTone?: "mono";
   badge?: "Baru" | "Terlaris";
+  /** Tema Motion: foto bergerak (cover cinema/reel/stack) + efek partikel + animasi buka. */
+  motion?: { fx: MotionFx };
 };
 
 export type ThemeKind = "foto" | "non-foto";
 export const themeKind = (t: Theme): ThemeKind => t.kind ?? "foto";
+
+/** Tab di katalog: tema motion punya tab sendiri; sisanya mengikuti `kind`. */
+export type CatalogTab = "motion" | ThemeKind;
+export const catalogTab = (t: Theme): CatalogTab => (t.motion ? "motion" : themeKind(t));
+
+const COVER_TAG: Partial<Record<CoverLayout, string>> = {
+  cinema: "Foto zoom perlahan",
+  reel: "Foto bergulir",
+  stack: "Foto bergantian",
+};
+const FX_TAG: Record<MotionFx, string> = {
+  petals: "Kelopak jatuh",
+  sparkle: "Kilau bintang",
+  leaves: "Daun melayang",
+  bokeh: "Cahaya lembut",
+};
+/** Label singkat "apa yang bergerak" untuk kartu katalog (bahasa awam). */
+export function motionTags(t: Theme): string[] {
+  if (!t.motion) return [];
+  return [COVER_TAG[t.cover], FX_TAG[t.motion.fx], "Animasi saat dibuka"].filter(Boolean) as string[];
+}
 
 export const THEMES: Theme[] = [
   {
@@ -368,6 +393,91 @@ export const THEMES: Theme[] = [
     fonts: { script: "Sacramento", display: "DM Serif Display", body: "Josefin Sans" },
     ornament: "boho",
     cover: "polaroid",
+  },
+  /* ---------------- Tema Motion ---------------- */
+  {
+    id: "sinema-emas",
+    name: "Sinema Emas",
+    category: "Elegan",
+    description: "Foto prewedding berganti seperti film dengan zoom perlahan. Biru malam dan kilau emas.",
+    palette: { bg: "#0E1A2B", surface: "#15263D", ink: "#F4EBD6", muted: "#B9AE95", primary: "#D2AE62", onPrimary: "#0E1A2B", accent: "#E9D29A" },
+    fonts: { script: "Great Vibes", display: "Cinzel", body: "Marcellus" },
+    ornament: "deco",
+    cover: "cinema",
+    motion: { fx: "sparkle" },
+    badge: "Baru",
+  },
+  {
+    id: "sakura-melayang",
+    name: "Sakura Melayang",
+    category: "Floral",
+    description: "Foto sinematik dengan kelopak merah muda berjatuhan pelan. Lembut dan romantis.",
+    palette: { bg: "#FBEFF0", surface: "#FFF8F8", ink: "#4B2B33", muted: "#8E6870", primary: "#B8626F", onPrimary: "#FFF8F8", accent: "#E7AEB6" },
+    fonts: { script: "Parisienne", display: "Playfair Display", body: "Lora" },
+    ornament: "floral",
+    cover: "cinema",
+    motion: { fx: "petals" },
+    badge: "Baru",
+  },
+  {
+    id: "sinema-nusantara",
+    name: "Sinema Nusantara",
+    category: "Tradisional",
+    description: "Slideshow foto bernuansa sogan dengan kilau emas. Cocok untuk adat Jawa modern.",
+    palette: { bg: "#2A1C14", surface: "#3A281D", ink: "#F1E3C6", muted: "#C2AD86", primary: "#C08E36", onPrimary: "#2A1C14", accent: "#D9B46A" },
+    fonts: { script: "Alex Brush", display: "Cinzel", body: "Marcellus" },
+    ornament: "kawung",
+    cover: "cinema",
+    motion: { fx: "sparkle" },
+    badge: "Baru",
+  },
+  {
+    id: "reel-sage",
+    name: "Reel Sage",
+    category: "Minimalis",
+    description: "Tiga kolom foto bergulir naik-turun di belakang kartu nama. Hijau sage yang segar.",
+    palette: { bg: "#EEF1E8", surface: "#FBFCF8", ink: "#2F3B2F", muted: "#6B7A66", primary: "#4F6F52", onPrimary: "#FBFCF8", accent: "#C2A169" },
+    fonts: { script: "Pinyon Script", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "botanical",
+    cover: "reel",
+    motion: { fx: "leaves" },
+    badge: "Baru",
+  },
+  {
+    id: "reel-midnight",
+    name: "Reel Midnight",
+    category: "Gelap",
+    description: "Foto bergulir di latar gelap dengan cahaya bokeh rose gold. Modern dan dramatis.",
+    palette: { bg: "#121214", surface: "#1B1B1F", ink: "#F3EDE7", muted: "#A9A09A", primary: "#D8A58F", onPrimary: "#121214", accent: "#E8C5B3" },
+    fonts: { script: "Italiana", display: "Playfair Display", body: "Josefin Sans" },
+    ornament: "line",
+    cover: "reel",
+    motion: { fx: "bokeh" },
+    badge: "Baru",
+  },
+  {
+    id: "tumpukan-kenangan",
+    name: "Tumpukan Kenangan",
+    category: "Rustic",
+    description: "Tumpukan foto polaroid yang berganti satu per satu. Hangat dan santai.",
+    palette: { bg: "#F4E6D6", surface: "#FBF4EC", ink: "#4A2F22", muted: "#8B6A57", primary: "#9C5B3B", onPrimary: "#FBF4EC", accent: "#D9A673" },
+    fonts: { script: "Sacramento", display: "DM Serif Display", body: "Josefin Sans" },
+    ornament: "boho",
+    cover: "stack",
+    motion: { fx: "bokeh" },
+    badge: "Baru",
+  },
+  {
+    id: "aurora-lilac",
+    name: "Aurora Lilac",
+    category: "Floral",
+    description: "Foto bertumpuk yang berganti dengan kilau lembut. Ungu lilac yang manis.",
+    palette: { bg: "#EEEAF4", surface: "#FBF9FE", ink: "#3B3352", muted: "#7A7191", primary: "#7B6AA0", onPrimary: "#FBF9FE", accent: "#C8B6E2" },
+    fonts: { script: "Parisienne", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "botanical",
+    cover: "stack",
+    motion: { fx: "sparkle" },
+    badge: "Baru",
   },
 ];
 

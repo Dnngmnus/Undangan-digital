@@ -6,7 +6,7 @@ Platform undangan pernikahan digital: katalog tema untuk customer, pemesanan via
 
 | Area | Fitur |
 |---|---|
-| **Landing** (`/`) | Bar promo + hitung mundur, hero 3 ponsel, 12 fitur ber-ikon, katalog tab **Tema Foto / Non Foto** (32 tema: 28 Foto + 4 Non Foto, sampul dirender live), harga coret + badge diskon, add-on, testimoni, cara pesan, FAQ, tombol WhatsApp melayang |
+| **Landing** (`/`) | Bar promo + hitung mundur, hero 3 ponsel, 12 fitur ber-ikon, katalog 3 tab **Tema Motion / Tema Foto / Tema Non Foto** (39 tema: 7 Motion + 28 Foto + 4 Non Foto, sampul dirender live dan bergerak, tombol jeda animasi), harga coret + badge diskon, add-on, testimoni, cara pesan, FAQ, tombol WhatsApp melayang |
 | **Demo tema** (`/tema/[id]?to=Nama`) | Undangan contoh lengkap per tema, RSVP berjalan lokal (tanpa DB) |
 | **Pemesanan** (`/order`) | Pilih tema, paket, dan add-on → total dihitung ulang di server → simpan ke DB → WhatsApp admin terbuka dengan ringkasan, add-on, total, dan kode pesanan |
 | **Undangan** (`/[slug]?to=Nama`) | Gerbang "Buka undangan" + nama tamu, musik latar (pustaka lagu `public/music` atau upload per undangan), countdown, simpan ke Google Calendar, Maps, love story, galeri + lightbox, amplop digital (salin rekening), RSVP & ucapan, navigasi bawah, layout 2 kolom di desktop, meta OG untuk preview WhatsApp |
@@ -25,6 +25,7 @@ src/
 │   └── admin/                   # login + (panel)/… dashboard, actions.ts
 ├── components/
 │   ├── invitation/              # renderer undangan (dipakai SEMUA tema)
+│   │   └── Motion.tsx           # komponen gerak: Ken Burns, partikel, reel, tumpukan foto, marquee
 │   ├── store/                   # komponen katalog
 │   └── admin/                   # editor, upload, tools tamu
 ├── themes/registry.ts           # ← definisi tema
@@ -70,6 +71,41 @@ Tambahkan satu objek ke `THEMES` di `src/themes/registry.ts`:
 Tema `non-foto` otomatis masuk tab **Tema Non Foto** dan di undangan semua foto disembunyikan (mempelai tampil sebagai monogram, galeri foto tidak dirender, video YouTube tetap tampil).
 
 Tema langsung muncul di katalog, form order, dan editor admin. Untuk variasi visual baru (ornamen/layout sampul), tambahkan case di `Ornament.tsx` / `CoverArt.tsx`.
+
+## Tema Motion (foto bergerak)
+
+Tema motion adalah tema foto biasa yang diberi `motion` dan salah satu dari tiga sampul bergerak. Tidak butuh video: cukup foto cover + galeri.
+
+| `cover` | Yang bergerak |
+|---|---|
+| `cinema` | Slideshow 4 foto layar penuh, crossfade + zoom perlahan (Ken Burns), nama muncul huruf demi huruf |
+| `reel` | Tiga kolom foto bergulir naik-turun di belakang kartu nama kaca |
+| `stack` | Tumpukan polaroid, kartu teratas terbang keluar lalu pindah ke belakang |
+
+`motion.fx` menambahkan partikel di sampul dan di seluruh undangan: `petals` (kelopak), `leaves` (daun), `sparkle` (kilau), `bokeh` (cahaya lembut).
+
+Di dalam undangan, tema motion juga mendapat: hero bergerak yang sama dengan sampul, tombol buka berdenyut, gerbang zoom-keluar, mempelai masuk dari kiri/kanan, kartu acara zoom-in, dan galeri berjalan (marquee) di atas galeri lightbox.
+
+```ts
+{
+  id: "sinema-emas",
+  name: "Sinema Emas",
+  category: "Elegan",
+  description: "…",
+  palette: { … }, fonts: { … },
+  ornament: "deco",
+  cover: "cinema",              // cinema | reel | stack
+  motion: { fx: "sparkle" },    // petals | leaves | sparkle | bokeh
+}
+```
+
+Catatan teknis:
+
+- Semua gerak murni CSS (`@keyframes mo-*` di `globals.css`), tanpa JS dan tanpa library, jadi sampul tetap Server Component dan thumbnail katalog memakai sampul aslinya.
+- Slideshow memakai foto `coverImage` lalu `gallery` (tanpa duplikat, diulang bila kurang). Makin banyak foto, makin bervariasi; minimal 4 foto ideal. Satu foto saja tetap jalan (di-zoom perlahan).
+- Thumbnail di luar layar dijeda otomatis (`PhoneFrame`), dan pengunjung bisa menekan **Jeda animasi** di katalog.
+- Pengguna dengan pengaturan *reduce motion* melihat versi diam: foto pertama, tanpa partikel.
+- Posisi partikel dibuat dari pengacak bilangan bulat deterministik agar tidak terjadi hydration mismatch.
 
 ## Setup
 

@@ -8,6 +8,7 @@ import { formatDateDots, formatDateLong, youtubeEmbed } from "@/lib/utils";
 import { CoverArt } from "./CoverArt";
 import { Corners, Divider, PatternBg } from "./Ornament";
 import { BottomNav, CopyButton, Countdown, Gallery, MusicToggle, useReveal } from "./interactive";
+import { FxLayer, KenBurns, MarqueeRows, ScrollHint, motionPhotos } from "./Motion";
 import { RsvpWishes } from "./RsvpWishes";
 
 type Props = {
@@ -60,9 +61,9 @@ function SectionTitle({ title, theme, children }: { title: string; theme: Theme;
   );
 }
 
-function PersonCard({ p, theme }: { p: Person; theme: Theme }) {
+function PersonCard({ p, theme, reveal = "" }: { p: Person; theme: Theme; reveal?: string }) {
   return (
-    <div className="reveal text-center">
+    <div className={`reveal ${reveal} text-center`}>
       <div className="relative mx-auto w-40">
         <div className={`absolute -inset-2 border border-iv-accent ${theme.cover === "arch" ? "arch-mask" : "rounded-full"}`} />
         {p.photo ? (
@@ -138,12 +139,12 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
 
       {/* ---------------- Gerbang / sampul ---------------- */}
       {!opened && (
-        <div className={`fixed inset-0 z-50 ${leaving ? "gate-leaving" : ""}`}>
+        <div className={`fixed inset-0 z-50 ${leaving ? (theme.motion ? "gate-leaving-motion" : "gate-leaving") : ""}`}>
           <CoverArt theme={theme} data={data} dateLabel={formatDateDots(dateIso)}>
             <div className="mt-8">
               <p className="font-body text-xs text-iv-muted">Kepada Yth. Bapak/Ibu/Saudara/i</p>
               <p className="mt-1 font-display text-2xl text-iv-ink">{guestName || "Tamu Undangan"}</p>
-              <button type="button" onClick={open} disabled={leaving} className="mt-5 rounded-full bg-iv-primary px-7 py-3 font-body text-sm text-iv-on-primary shadow-md">
+              <button type="button" onClick={open} disabled={leaving} className={`mt-5 rounded-full bg-iv-primary px-7 py-3 font-body text-sm text-iv-on-primary shadow-md ${theme.motion ? "mo-pulse" : ""}`}>
                 Buka undangan
               </button>
             </div>
@@ -151,14 +152,22 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
         </div>
       )}
 
+      {/* Tema motion: partikel (kelopak/kilau/daun) melayang di atas seluruh halaman setelah undangan dibuka */}
+      {theme.motion && opened && <FxLayer fx={theme.motion.fx} count={10} fixed />}
+
       <div className="lg:flex">
         {/* -------- Panel kiri desktop: sampul tetap -------- */}
         <aside className="relative hidden h-screen flex-1 overflow-hidden lg:sticky lg:top-0 lg:block" aria-hidden>
           {coverPhoto ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={coverPhoto} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              {theme.motion ? (
+                <KenBurns photos={motionPhotos(data, 4)} step={7} />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={coverPhoto} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              {theme.motion && <FxLayer fx={theme.motion.fx} count={14} />}
             </>
           ) : (
             <div className="absolute inset-0 bg-iv-surface">
@@ -176,6 +185,13 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
         {/* -------- Kolom undangan -------- */}
         <main ref={mainRef} className="relative mx-auto w-full max-w-[30rem] pb-24 lg:mx-0 lg:w-[30rem] lg:shrink-0">
           {/* Hero */}
+          {theme.motion ? (
+            // Tema motion: hero memakai sampul bergerak yang sama; dirender saat gerbang mulai terbuka agar animasi teks terlihat
+            <section className="relative h-[100svh] overflow-hidden">
+              {(leaving || opened) && <CoverArt theme={theme} data={data} dateLabel={formatDateDots(dateIso)} />}
+              <ScrollHint />
+            </section>
+          ) : (
           <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 text-center">
             <PatternBg kind={theme.ornament} />
             <Corners kind={theme.ornament} className="text-iv-accent" />
@@ -187,6 +203,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
             </h1>
             <p className="reveal mt-6 font-display text-xl tracking-widest">{formatDateDots(dateIso)}</p>
           </section>
+          )}
 
           {/* Kutipan */}
           {data.quote && (
@@ -200,9 +217,9 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
           {/* Mempelai */}
           <section id="mempelai" className={section}>
             <SectionTitle title="Bride & Groom" theme={theme}>{data.opening}</SectionTitle>
-            <PersonCard p={first} theme={theme} />
+            <PersonCard p={first} theme={theme} reveal={theme.motion ? "reveal-left" : ""} />
             <p className="reveal my-10 text-center font-script text-6xl text-iv-accent">&</p>
-            <PersonCard p={second} theme={theme} />
+            <PersonCard p={second} theme={theme} reveal={theme.motion ? "reveal-right" : ""} />
           </section>
 
           {/* Countdown */}
@@ -221,7 +238,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
             <SectionTitle title="Rangkaian Acara" theme={theme}>Dengan memohon rahmat Tuhan, acara akan dilaksanakan pada:</SectionTitle>
             <div className="space-y-6">
               {data.events.map((ev, i) => (
-                <article key={i} className="reveal relative overflow-hidden rounded-2xl border border-iv-accent/50 bg-iv-surface px-6 py-8 text-center">
+                <article key={i} className={`reveal ${theme.motion ? "reveal-zoom" : ""} relative overflow-hidden rounded-2xl border border-iv-accent/50 bg-iv-surface px-6 py-8 text-center`}>
                   <Corners kind={theme.ornament} className="!h-16 !w-16 text-iv-accent/70" />
                   <h3 className="font-script text-4xl text-iv-primary">{ev.title}</h3>
                   <p className="mt-3 font-display text-lg capitalize">{formatDateLong(ev.date)}</p>
@@ -283,6 +300,7 @@ export function InvitationView({ theme, data: rawData, eventDate, guestName, inv
                   />
                 </div>
               )}
+              {theme.motion && <MarqueeRows images={data.gallery} />}
               {data.gallery.length > 0 && <Gallery images={data.gallery} />}
             </section>
           )}
