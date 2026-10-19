@@ -122,8 +122,10 @@ for _ in $(seq 1 30); do
   if curl -fs -o /dev/null "http://127.0.0.1:$PORT/"; then
     ip=$(hostname -I 2>/dev/null | awk '{print $1}')
     info "Berjalan!"
-    echo "    Di STB      : http://127.0.0.1:$PORT"
-    [ "$HOST" = "0.0.0.0" ] && [ -n "$ip" ] && echo "    Dari HP/PC  : http://$ip:$PORT   (harus satu jaringan WiFi/LAN)"
+    if [ "$HOST" = "0.0.0.0" ] && [ -n "$ip" ]; then
+      echo "    Buka di browser HP/PC : http://$ip:$PORT   (harus satu jaringan WiFi/LAN)"
+    fi
+    echo "    Cek dari terminal STB : curl -I http://127.0.0.1:$PORT   (alamat ini tidak bisa dibuka dari PC/HP)"
     echo "    Log         : journalctl -u undangan -f"
     exit 0
   fi

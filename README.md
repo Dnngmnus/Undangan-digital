@@ -128,3 +128,5 @@ sudo bash install-stb.sh USERNAME/NAMA-REPO
 ```
 
 Panduan lengkap (upload ke GitHub, IP lokal, variabel, Cloudflare Tunnel, troubleshooting): [`deploy/README-STB.md`](deploy/README-STB.md).
+
+Ubah harga/nama toko dari PC Windows lalu update ke STB dengan satu perintah: [`deploy/TUTORIAL-WINDOWS.md`](deploy/TUTORIAL-WINDOWS.md).
