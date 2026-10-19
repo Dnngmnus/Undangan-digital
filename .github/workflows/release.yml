@@ -1,1 +1,52 @@
+# Build otomatis setiap push ke main, hasilnya dipublikasikan sebagai GitHub Release "latest".
+# STB cukup mengunduh undangan-release.tar.gz (lihat deploy/install-stb.sh) — tidak perlu build di STB.
+#
+# Isi di repo → Settings → Secrets and variables → Actions → tab "Variables":
+#   NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY,
+#   NEXT_PUBLIC_ADMIN_WA, NEXT_PUBLIC_BRAND_NAME, NEXT_PUBLIC_SITE_URL
+# Semua opsional: tanpa Supabase, situs jalan dalam mode demo (katalog & demo tema).
+name: Build release
 
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build & package
+        run: bash deploy/pack.sh
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ADMIN_WA: ${{ vars.NEXT_PUBLIC_ADMIN_WA }}
+          NEXT_PUBLIC_BRAND_NAME: ${{ vars.NEXT_PUBLIC_BRAND_NAME }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+      - name: Publish release "latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest undangan-release.tar.gz \
+            --title "Build terbaru" \
+            --notes "Commit ${GITHUB_SHA::7} — $(date -u +'%Y-%m-%d %H:%M UTC')" \
+            --target "${GITHUB_SHA}" \
+            --latest
