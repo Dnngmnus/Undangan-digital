@@ -2,7 +2,8 @@
 // harus jatuh ke nilai default, bukan string kosong.
 export const env = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+  // Publishable key (sb_publishable_…) atau anon key lama (eyJ…) — keduanya berfungsi sama
+  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
   adminWa: process.env.NEXT_PUBLIC_ADMIN_WA || "6281234567890",
   brandName: process.env.NEXT_PUBLIC_BRAND_NAME || "Abati Invitation",
   siteUrl: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),

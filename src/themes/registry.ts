@@ -4,8 +4,8 @@
  * perbedaannya hanya di token: palet, font, ornamen, dan layout cover.
  */
 
-export type OrnamentKind = "botanical" | "deco" | "kawung" | "line" | "boho" | "wave";
-export type CoverLayout = "arch" | "frame" | "full" | "split";
+export type OrnamentKind = "botanical" | "deco" | "kawung" | "line" | "boho" | "wave" | "floral" | "islamic" | "tropical" | "megamendung" | "watercolor";
+export type CoverLayout = "arch" | "frame" | "full" | "split" | "circle" | "polaroid" | "magazine";
 export type ThemeCategory = "Floral" | "Elegan" | "Minimalis" | "Tradisional" | "Rustic" | "Gelap";
 
 export type Theme = {
@@ -27,6 +27,8 @@ export type Theme = {
   cover: CoverLayout;
   /** "non-foto": undangan tanpa foto sama sekali (mempelai pakai monogram, galeri disembunyikan). Default "foto". */
   kind?: ThemeKind;
+  /** "mono": foto sampul ditampilkan hitam-putih (tema monokrom). */
+  photoTone?: "mono";
   badge?: "Baru" | "Terlaris";
 };
 
@@ -76,7 +78,6 @@ export const THEMES: Theme[] = [
     ornament: "kawung",
     cover: "frame",
     kind: "non-foto",
-    badge: "Baru",
   },
   {
     id: "terracotta-boho",
@@ -97,7 +98,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Great Vibes", display: "Playfair Display", body: "Lora" },
     ornament: "botanical",
     cover: "arch",
-    badge: "Baru",
   },
   {
     id: "monokrom",
@@ -108,6 +108,7 @@ export const THEMES: Theme[] = [
     fonts: { script: "Italiana", display: "Italiana", body: "Josefin Sans" },
     ornament: "line",
     cover: "split",
+    photoTone: "mono",
   },
   {
     id: "lavender-mist",
@@ -169,7 +170,6 @@ export const THEMES: Theme[] = [
     fonts: { script: "Great Vibes", display: "Cormorant Garamond", body: "Lora" },
     ornament: "botanical",
     cover: "arch",
-    badge: "Baru",
   },
   {
     id: "melati-putih",
@@ -201,6 +201,7 @@ export const THEMES: Theme[] = [
     fonts: { script: "Italiana", display: "Italiana", body: "Josefin Sans" },
     ornament: "line",
     cover: "split",
+    photoTone: "mono",
   },
   {
     id: "olive-garden",
@@ -221,6 +222,152 @@ export const THEMES: Theme[] = [
     fonts: { script: "Parisienne", display: "Playfair Display", body: "Lora" },
     ornament: "deco",
     cover: "full",
+  },
+  {
+    id: "rose-garden",
+    name: "Rose Garden",
+    category: "Floral",
+    description: "Mawar merah muda dan bingkai foto bulat bercincin ganda.",
+    palette: { bg: "#FBF1EE", surface: "#FFF8F6", ink: "#4A2A2C", muted: "#92706F", primary: "#B4505E", onPrimary: "#FFF8F6", accent: "#E2A3A0" },
+    fonts: { script: "Great Vibes", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "floral",
+    cover: "circle",
+    badge: "Baru",
+  },
+  {
+    id: "peony-cream",
+    name: "Peony Cream",
+    category: "Floral",
+    description: "Bunga peony di atas krem, foto gaya polaroid.",
+    palette: { bg: "#F7EFE4", surface: "#FFFBF5", ink: "#4D3B2E", muted: "#8F7B69", primary: "#C26A5A", onPrimary: "#FFFBF5", accent: "#E9B8A0" },
+    fonts: { script: "Sacramento", display: "Playfair Display", body: "Lora" },
+    ornament: "floral",
+    cover: "polaroid",
+  },
+  {
+    id: "lilac-garden",
+    name: "Lilac Garden",
+    category: "Floral",
+    description: "Ungu lilac dan bunga kecil, bingkai lengkung.",
+    palette: { bg: "#F3EEF7", surface: "#FCFAFE", ink: "#3D3050", muted: "#7C6F90", primary: "#8A6BB0", onPrimary: "#FCFAFE", accent: "#D2B9E6" },
+    fonts: { script: "Parisienne", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "floral",
+    cover: "arch",
+  },
+  {
+    id: "biru-cat-air",
+    name: "Biru Cat Air",
+    category: "Floral",
+    description: "Sapuan cat air biru muda, foto polaroid.",
+    palette: { bg: "#F2F6FA", surface: "#FFFFFF", ink: "#23344A", muted: "#66778F", primary: "#4A74A8", onPrimary: "#FFFFFF", accent: "#A9C3E0" },
+    fonts: { script: "Parisienne", display: "Cormorant Garamond", body: "Lora" },
+    ornament: "watercolor",
+    cover: "polaroid",
+  },
+  {
+    id: "blush-cat-air",
+    name: "Blush Cat Air",
+    category: "Floral",
+    description: "Cat air merah muda lembut, foto bulat.",
+    palette: { bg: "#FCF3F1", surface: "#FFFFFF", ink: "#4B3035", muted: "#93747A", primary: "#B96D7A", onPrimary: "#FFFFFF", accent: "#F0C2C3" },
+    fonts: { script: "Great Vibes", display: "Playfair Display", body: "Lora" },
+    ornament: "watercolor",
+    cover: "circle",
+    badge: "Baru",
+  },
+  {
+    id: "nur-emerald",
+    name: "Nur Emerald",
+    category: "Elegan",
+    description: "Hijau zamrud dan emas dengan bintang segi delapan. Nuansa islami.",
+    palette: { bg: "#F3F1E8", surface: "#FFFEF8", ink: "#1F3A30", muted: "#5E7468", primary: "#1F6B4F", onPrimary: "#FFFEF8", accent: "#C2A14E" },
+    fonts: { script: "Great Vibes", display: "Cinzel", body: "Marcellus" },
+    ornament: "islamic",
+    cover: "arch",
+    badge: "Terlaris",
+  },
+  {
+    id: "masjid-biru",
+    name: "Masjid Biru",
+    category: "Gelap",
+    description: "Biru malam dan emas dengan pola geometri islami.",
+    palette: { bg: "#13233F", surface: "#1B2F52", ink: "#EEF1F6", muted: "#A9B4C8", primary: "#D6B56E", onPrimary: "#13233F", accent: "#8FA6CF" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "islamic",
+    cover: "circle",
+  },
+  {
+    id: "gold-luxe",
+    name: "Gold Luxe",
+    category: "Elegan",
+    description: "Hitam dan emas bergaya sampul majalah. Mewah dan berani.",
+    palette: { bg: "#141210", surface: "#1E1B17", ink: "#F2EAD8", muted: "#B8AC93", primary: "#D4AF61", onPrimary: "#141210", accent: "#C9A55A" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "deco",
+    cover: "magazine",
+    badge: "Baru",
+  },
+  {
+    id: "noir-editorial",
+    name: "Noir Editorial",
+    category: "Minimalis",
+    description: "Hitam-putih bergaya majalah fashion.",
+    palette: { bg: "#F5F4F0", surface: "#FFFFFF", ink: "#161616", muted: "#6A6A6A", primary: "#161616", onPrimary: "#FFFFFF", accent: "#D9C3A0" },
+    fonts: { script: "Italiana", display: "Italiana", body: "Josefin Sans" },
+    ornament: "line",
+    cover: "magazine",
+    photoTone: "mono",
+  },
+  {
+    id: "tropis-bali",
+    name: "Tropis Bali",
+    category: "Rustic",
+    description: "Daun monstera dan palem. Cocok untuk pernikahan di Bali atau pantai.",
+    palette: { bg: "#EFF3EA", surface: "#FAFCF7", ink: "#1F3B2C", muted: "#5E7A66", primary: "#2E6B47", onPrimary: "#FAFCF7", accent: "#E2B15B" },
+    fonts: { script: "Sacramento", display: "DM Serif Display", body: "Josefin Sans" },
+    ornament: "tropical",
+    cover: "full",
+  },
+  {
+    id: "monstera-night",
+    name: "Monstera Night",
+    category: "Gelap",
+    description: "Hijau tropis gelap bergaya majalah.",
+    palette: { bg: "#10241C", surface: "#173226", ink: "#EAF1EA", muted: "#A3B9AA", primary: "#C9B37A", onPrimary: "#10241C", accent: "#8FC4A0" },
+    fonts: { script: "Italiana", display: "Playfair Display", body: "Josefin Sans" },
+    ornament: "tropical",
+    cover: "magazine",
+  },
+  {
+    id: "mega-mendung",
+    name: "Mega Mendung",
+    category: "Tradisional",
+    description: "Motif awan batik Cirebon dalam biru indigo.",
+    palette: { bg: "#E9EEF6", surface: "#F8FAFD", ink: "#1C2B4A", muted: "#5A6A8A", primary: "#2B4A8A", onPrimary: "#F8FAFD", accent: "#B0473A" },
+    fonts: { script: "Alex Brush", display: "Cinzel", body: "Marcellus" },
+    ornament: "megamendung",
+    cover: "circle",
+    badge: "Baru",
+  },
+  {
+    id: "mendung-merah",
+    name: "Mendung Merah",
+    category: "Tradisional",
+    description: "Mega mendung merah bata dan biru, bingkai lengkung.",
+    palette: { bg: "#F6ECE6", surface: "#FFF8F4", ink: "#4A1E1A", muted: "#8C5F58", primary: "#9E2F28", onPrimary: "#FFF8F4", accent: "#2F4A7A" },
+    fonts: { script: "Pinyon Script", display: "Cinzel", body: "Marcellus" },
+    ornament: "megamendung",
+    cover: "arch",
+  },
+  {
+    id: "senja-polaroid",
+    name: "Senja Polaroid",
+    category: "Rustic",
+    description: "Warna senja dan lengkung boho, foto polaroid.",
+    palette: { bg: "#F2E3D3", surface: "#FBF4EC", ink: "#4A2F22", muted: "#8B6A57", primary: "#9C5B3B", onPrimary: "#FBF4EC", accent: "#D9A673" },
+    fonts: { script: "Sacramento", display: "DM Serif Display", body: "Josefin Sans" },
+    ornament: "boho",
+    cover: "polaroid",
   },
 ];
 

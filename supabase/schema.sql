@@ -184,3 +184,19 @@ create policy "testi_public_read" on public.testimonials
 drop policy if exists "testi_admin_write" on public.testimonials;
 create policy "testi_admin_write" on public.testimonials
   for all using (public.is_admin()) with check (public.is_admin());
+
+-- =====================================================================
+-- v3: grant eksplisit (Postgres memeriksa GRANT sebelum RLS).
+-- Hak minimum; RLS di atas tetap menyaring baris mana yang boleh diakses.
+-- =====================================================================
+grant usage on schema public to anon, authenticated;
+grant execute on function public.is_admin() to anon, authenticated;
+
+-- tamu (tanpa login)
+grant select on public.invitations, public.rsvps, public.testimonials to anon;
+grant insert on public.rsvps, public.orders to anon;
+
+-- admin (login) — RLS membatasi ke user di tabel admins
+grant select, insert, update, delete on
+  public.invitations, public.rsvps, public.orders, public.testimonials to authenticated;
+grant select on public.admins to authenticated;

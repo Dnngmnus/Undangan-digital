@@ -1,6 +1,6 @@
 import type { Theme } from "@/themes/registry";
 import type { InvitationData } from "@/lib/types";
-import { Corners, Divider, PatternBg } from "./Ornament";
+import { Corner, Corners, Divider, PatternBg } from "./Ornament";
 
 type Props = {
   theme: Theme;
@@ -23,6 +23,7 @@ export function CoverArt(props: Props) {
 function CoverLayout({ theme, data, dateLabel, children }: Props) {
   const [first, second] = data.groomFirst ? [data.groom, data.bride] : [data.bride, data.groom];
   const photo = data.coverImage || data.gallery[0];
+  const tone = theme.photoTone === "mono" ? "grayscale" : "";
 
   switch (theme.cover) {
     case "arch":
@@ -71,10 +72,12 @@ function CoverLayout({ theme, data, dateLabel, children }: Props) {
         <div className="relative flex h-full w-full flex-col justify-end overflow-hidden bg-iv-bg text-center text-iv-ink">
           {photo && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={photo} alt="" className={`absolute inset-0 h-full w-full object-cover ${tone}`} />
           )}
           {/* gradien ke warna latar tema agar teks tetap terbaca di foto apa pun */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent from-25% via-iv-bg/75 via-60% to-iv-bg" />
+          <Corner kind={theme.ornament} position="tl" className="text-iv-accent" />
+          <Corner kind={theme.ornament} position="tr" className="text-iv-accent" />
           <div className="relative px-8 pb-12 pt-40">
             <p className="font-display text-sm tracking-[0.3em] text-iv-muted">The Wedding of</p>
             <h1 className="mt-3 font-script text-6xl leading-tight text-iv-primary @md:text-7xl">
@@ -87,6 +90,86 @@ function CoverLayout({ theme, data, dateLabel, children }: Props) {
         </div>
       );
 
+    case "circle":
+      return (
+        <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-iv-bg px-8 py-10 text-center text-iv-ink">
+          <PatternBg kind={theme.ornament} />
+          <Corners kind={theme.ornament} className="text-iv-accent" />
+          <p className="font-display text-sm tracking-[0.3em] text-iv-muted">The Wedding of</p>
+          <div className="relative mt-6 w-48 @md:w-56">
+            {/* cincin ganda: garis tipis aksen + garis putus-putus primer */}
+            <div className="absolute -inset-3 rounded-full border border-iv-accent" />
+            <div className="absolute -inset-5 rounded-full border border-dashed border-iv-primary/50" />
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt="" className="aspect-square w-full rounded-full object-cover" />
+            ) : (
+              <div className="flex aspect-square w-full items-center justify-center rounded-full bg-iv-surface font-script text-7xl text-iv-primary">
+                {first.nickname.charAt(0)}
+                <span className="mx-1 text-4xl text-iv-accent">&</span>
+                {second.nickname.charAt(0)}
+              </div>
+            )}
+          </div>
+          <h1 className="mt-9 font-script text-5xl leading-tight text-iv-primary @md:text-6xl">
+            {first.nickname} <span className="text-iv-accent">&</span> {second.nickname}
+          </h1>
+          <Divider kind={theme.ornament} className="mt-1 text-iv-accent" />
+          <p className="mt-1 font-display text-lg tracking-widest">{dateLabel}</p>
+          {children}
+        </div>
+      );
+
+    case "polaroid":
+      return (
+        <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-iv-bg px-8 py-10 text-center text-iv-ink">
+          <PatternBg kind={theme.ornament} />
+          <Corners kind={theme.ornament} className="text-iv-accent" />
+          <p className="font-display text-sm tracking-[0.3em] text-iv-muted">The Wedding of</p>
+          <div className="relative mt-6 w-52 -rotate-3 bg-white p-3 pb-4 shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] @md:w-60">
+            {/* selotip di atas foto */}
+            <span className="absolute -top-3 left-1/2 h-6 w-20 -translate-x-1/2 rotate-2 bg-iv-accent/60" />
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt="" className="aspect-[4/5] w-full object-cover" />
+            ) : (
+              <div className="aspect-[4/5] w-full bg-iv-surface" />
+            )}
+            <p className="mt-3 font-script text-3xl leading-none text-[#2b2b2b]">
+              {first.nickname} & {second.nickname}
+            </p>
+          </div>
+          <p className="mt-7 font-display text-lg tracking-widest">{dateLabel}</p>
+          {children}
+        </div>
+      );
+
+    case "magazine":
+      return (
+        <div className={`relative flex h-full w-full flex-col overflow-hidden ${photo ? "bg-black" : "bg-iv-primary"} text-white`}>
+          {photo && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photo} alt="" className={`absolute inset-0 h-full w-full object-cover ${tone}`} />
+          )}
+          {/* gelap di atas untuk judul, terang ke warna tema di bawah untuk blok tamu */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/10 via-45% to-transparent" />
+          <Corner kind={theme.ornament} position="tr" className="text-iv-accent" />
+          <Corner kind={theme.ornament} position="br" className="text-iv-accent" />
+          <div className="relative px-7 pt-12 text-left">
+            <p className="font-body text-xs tracking-[0.4em] opacity-85">THE WEDDING OF</p>
+            <h1 className="mt-3 font-display text-[3.4rem] uppercase leading-[0.92] @md:text-7xl">
+              {first.nickname}
+              <span className="block font-script text-5xl normal-case text-iv-accent @md:text-6xl">&</span>
+              {second.nickname}
+            </h1>
+            <p className="mt-4 inline-block bg-iv-primary px-3 py-1 font-body text-xs tracking-[0.3em] text-iv-on-primary">{dateLabel}</p>
+          </div>
+          {children && (
+            <div className="relative mt-auto rounded-t-3xl bg-iv-bg/95 px-7 pb-10 pt-2 text-center text-iv-ink backdrop-blur">{children}</div>
+          )}
+        </div>
+      );
+
     case "split":
     default:
       return (
@@ -94,7 +177,7 @@ function CoverLayout({ theme, data, dateLabel, children }: Props) {
           <div className="relative h-[52%] shrink-0">
             {photo && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={photo} alt="" className="h-full w-full object-cover grayscale" />
+              <img src={photo} alt="" className={`h-full w-full object-cover ${tone}`} />
             )}
           </div>
           <div className="flex flex-1 flex-col justify-center px-8 py-8 text-left">

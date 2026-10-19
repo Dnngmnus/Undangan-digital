@@ -33,9 +33,9 @@ Kalau ada salah ketik, proses berhenti di tahap build dan STB **tidak tersentuh*
    NEXT_PUBLIC_ADMIN_WA=6281234567890
    NEXT_PUBLIC_SITE_URL=http://192.168.0.101:3000
 
-   # Isi nanti setelah Supabase siap:
+   # Isi nanti setelah Supabase siap (lihat deploy/TUTORIAL-ADMIN.md):
    # NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-   # NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+   # NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    ```
    - `NEXT_PUBLIC_ADMIN_WA`: format **62**, tanpa `+`, tanpa spasi atau tanda hubung.
    - `NEXT_PUBLIC_SITE_URL`: alamat situs. Untuk sekarang IP STB; nanti diganti domain.

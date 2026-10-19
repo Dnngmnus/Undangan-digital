@@ -6,10 +6,10 @@ Platform undangan pernikahan digital: katalog tema untuk customer, pemesanan via
 
 | Area | Fitur |
 |---|---|
-| **Landing** (`/`) | Bar promo + hitung mundur, hero 3 ponsel, 12 fitur ber-ikon, katalog tab **Tema Foto / Non Foto** (18 tema, sampul dirender live), harga coret + badge diskon, add-on, testimoni, cara pesan, FAQ, tombol WhatsApp melayang |
+| **Landing** (`/`) | Bar promo + hitung mundur, hero 3 ponsel, 12 fitur ber-ikon, katalog tab **Tema Foto / Non Foto** (32 tema: 28 Foto + 4 Non Foto, sampul dirender live), harga coret + badge diskon, add-on, testimoni, cara pesan, FAQ, tombol WhatsApp melayang |
 | **Demo tema** (`/tema/[id]?to=Nama`) | Undangan contoh lengkap per tema, RSVP berjalan lokal (tanpa DB) |
 | **Pemesanan** (`/order`) | Pilih tema, paket, dan add-on → total dihitung ulang di server → simpan ke DB → WhatsApp admin terbuka dengan ringkasan, add-on, total, dan kode pesanan |
-| **Undangan** (`/[slug]?to=Nama`) | Gerbang "Buka undangan" + nama tamu, musik latar, countdown, simpan ke Google Calendar, Maps, love story, galeri + lightbox, amplop digital (salin rekening), RSVP & ucapan, navigasi bawah, layout 2 kolom di desktop, meta OG untuk preview WhatsApp |
+| **Undangan** (`/[slug]?to=Nama`) | Gerbang "Buka undangan" + nama tamu, musik latar (pustaka lagu `public/music` atau upload per undangan), countdown, simpan ke Google Calendar, Maps, love story, galeri + lightbox, amplop digital (salin rekening), RSVP & ucapan, navigasi bawah, layout 2 kolom di desktop, meta OG untuk preview WhatsApp |
 | **Admin** (`/admin`) | Login, daftar pesanan (add-on & total) + ubah status, kelola testimoni, buat undangan dari pesanan (data terisi otomatis), editor dengan pratinjau sampul live, upload foto/musik ke Supabase Storage, generator link + teks WA per tamu, rekap RSVP + ekspor CSV |
 
 ## Arsitektur
@@ -130,3 +130,5 @@ sudo bash install-stb.sh USERNAME/NAMA-REPO
 Panduan lengkap (upload ke GitHub, IP lokal, variabel, Cloudflare Tunnel, troubleshooting): [`deploy/README-STB.md`](deploy/README-STB.md).
 
 Ubah harga/nama toko dari PC Windows lalu update ke STB dengan satu perintah: [`deploy/TUTORIAL-WINDOWS.md`](deploy/TUTORIAL-WINDOWS.md).
+
+Setup database (Supabase), alur memproses pesanan sampai undangan terkirim, dan pustaka lagu: [`deploy/TUTORIAL-ADMIN.md`](deploy/TUTORIAL-ADMIN.md).

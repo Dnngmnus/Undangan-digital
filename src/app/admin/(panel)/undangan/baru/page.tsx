@@ -1,4 +1,5 @@
 import { InvitationEditor } from "@/components/admin/InvitationEditor";
+import { getMusicLibrary } from "@/lib/music";
 import { requireAdminPage } from "@/lib/supabase/server";
 import type { InvitationData, Order } from "@/lib/types";
 import { slugify } from "@/lib/utils";
@@ -11,6 +12,7 @@ const person = (nickname = "") => ({ nickname, fullName: "", parents: "", instag
 export default async function NewInvitationPage({ searchParams }: Props) {
   const { order: orderId } = await searchParams;
   const { supabase } = await requireAdminPage();
+  const music = await getMusicLibrary();
 
   // Prefill dari pesanan bila dibuka lewat tombol "Buat undangan"
   let order: Order | null = null;
@@ -41,6 +43,7 @@ export default async function NewInvitationPage({ searchParams }: Props) {
         Buat undangan{order && <span className="text-ink-soft"> untuk pesanan #{order.id.slice(0, 8).toUpperCase()}</span>}
       </h1>
       <InvitationEditor
+        music={music}
         initial={{
           id: null,
           slug: order ? slugify(`${order.bride_name} ${order.groom_name}`) : "",

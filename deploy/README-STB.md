@@ -58,7 +58,7 @@ Repo → Settings → Secrets and variables → Actions → tab **Variables** �
 | Nama | Contoh |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://abcd.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi…` |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` |
 | `NEXT_PUBLIC_ADMIN_WA` | `6281234567890` |
 | `NEXT_PUBLIC_BRAND_NAME` | `Abati Invitation` |
 | `NEXT_PUBLIC_SITE_URL` | uji lokal: `http://192.168.1.50:3000` · produksi: `https://undangan.domainmu.com` |

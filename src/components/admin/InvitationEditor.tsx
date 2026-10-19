@@ -9,6 +9,7 @@ import { PhoneFrame } from "@/components/store/PhoneFrame";
 import type { GiftAccount, InvitationData, Person, StoryItem, WeddingEvent } from "@/lib/types";
 import { formatDateDots, slugify, youtubeEmbed } from "@/lib/utils";
 import { THEMES, getThemeOrDefault, themeKind, themeVars } from "@/themes/registry";
+import type { Track } from "@/lib/music";
 import { MediaField, uploadMedia } from "./MediaField";
 
 export type EditorInitial = {
@@ -73,7 +74,7 @@ function ListEditor<T>({ items, onChange, empty, addLabel, render }: { items: T[
 }
 
 /* ================================================================== */
-export function InvitationEditor({ initial }: { initial: EditorInitial }) {
+export function InvitationEditor({ initial, music = [] }: { initial: EditorInitial; music?: Track[] }) {
   const router = useRouter();
   const [slug, setSlug] = useState(initial.slug);
   const [slugTouched, setSlugTouched] = useState(Boolean(initial.id));
@@ -241,7 +242,21 @@ export function InvitationEditor({ initial }: { initial: EditorInitial }) {
               <textarea rows={4} value={d.gallery.join("\n")} onChange={(e) => set("gallery", e.target.value.split("\n"))} className="field mt-2 font-mono text-xs" />
             </details>
           </div>
-          <MediaField label="Musik latar (mp3)" accept="audio/*" folder={`${folder}/musik`} value={d.music ?? ""} onChange={(v) => set("music", v)} />
+          <div className="space-y-2 rounded-lg border border-line bg-porcelain/60 p-4">
+            <label className="block">
+              <span className="mb-1 block text-sm text-ink-soft">Musik latar dari pustaka lagu</span>
+              <select
+                value={music.some((t) => t.url === d.music) ? d.music : ""}
+                onChange={(e) => set("music", e.target.value || undefined)}
+                className="field"
+              >
+                <option value="">{music.length ? "Tanpa musik / pakai URL di bawah" : "Pustaka kosong: taruh file MP3 di folder public/music"}</option>
+                {music.map((t) => <option key={t.file} value={t.url}>{t.title}</option>)}
+              </select>
+            </label>
+            {d.music && <audio key={d.music} src={d.music} controls preload="none" className="h-9 w-full" />}
+            <MediaField label="Atau URL / unggah MP3 khusus undangan ini" accept="audio/*" folder={`${folder}/musik`} value={music.some((t) => t.url === d.music) ? "" : d.music ?? ""} onChange={(v) => set("music", v || undefined)} />
+          </div>
           <Text label="Video prewedding (link YouTube)" value={d.video ?? ""} onChange={(v) => set("video", v)} placeholder="https://youtu.be/…" />
           {d.video && !youtubeEmbed(d.video) && <p className="text-xs text-red-700">Link belum dikenali sebagai video YouTube.</p>}
           {themeKind(theme) === "non-foto" && (

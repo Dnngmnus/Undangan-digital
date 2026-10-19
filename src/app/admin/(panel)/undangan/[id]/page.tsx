@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { InvitationEditor } from "@/components/admin/InvitationEditor";
+import { getMusicLibrary } from "@/lib/music";
 import { requireAdminPage } from "@/lib/supabase/server";
 import type { Invitation } from "@/lib/types";
 import { THEMES, googleFontsHref } from "@/themes/registry";
@@ -9,6 +10,7 @@ type Props = { params: Promise<{ id: string }> };
 export default async function EditInvitationPage({ params }: Props) {
   const { id } = await params;
   const { supabase } = await requireAdminPage();
+  const music = await getMusicLibrary();
   const { data } = await supabase.from("invitations").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const inv = data as Invitation;
@@ -20,6 +22,7 @@ export default async function EditInvitationPage({ params }: Props) {
         {inv.data.bride.nickname} & {inv.data.groom.nickname}
       </h1>
       <InvitationEditor
+        music={music}
         initial={{
           id: inv.id,
           slug: inv.slug,

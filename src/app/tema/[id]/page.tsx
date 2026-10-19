@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { InvitationView } from "@/components/invitation/InvitationView";
 import { DEMO_WISHES, getDemoInvitation } from "@/lib/demo-data";
 import { env } from "@/lib/env";
+import { getMusicLibrary } from "@/lib/music";
 import { getTheme, googleFontsHref } from "@/themes/registry";
 
 type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ to?: string }> };
@@ -18,6 +19,9 @@ export default async function ThemePreviewPage({ params, searchParams }: Params)
   const theme = getTheme(id);
   if (!theme) notFound();
   const demo = getDemoInvitation();
+  // demo memakai lagu pertama di pustaka (public/music) bila ada
+  const [track] = await getMusicLibrary();
+  if (track) demo.data.music = track.url;
 
   return (
     <>
