@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Token storefront (katalog & admin)
+   --------------------------------------------------------------- */
+@theme {
+  --color-porcelain: #eef0ec;
+  --color-paper: #fafbf8;
+  --color-ink: #1e2623;
+  --color-ink-soft: #4d5a54;
+  --color-moss: #3e5a4a;
+  --color-marigold: #e0a43a;
+  --color-blush: #e8c9c0;
+  --color-line: #d3d8d1;
+  --color-moss-deep: #243b2f;
+  --color-marigold-soft: #f6e3bd;
+  --color-blush-soft: #f6e4df;
+  --color-sage-soft: #d9e4d8;
+  --color-wa: #1fa855;
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif-display: "Young Serif", Georgia, serif;
+}
+
+/* ---------------------------------------------------------------
+   Token undangan — nilai diisi per tema lewat themeVars() inline.
+   `inline` agar utility merujuk var() runtime, bukan nilai statis.
+   --------------------------------------------------------------- */
+@theme inline {
+  --color-iv-bg: var(--bg);
+  --color-iv-surface: var(--surface);
+  --color-iv-ink: var(--ink);
+  --color-iv-muted: var(--muted);
+  --color-iv-primary: var(--primary);
+  --color-iv-on-primary: var(--on-primary);
+  --color-iv-accent: var(--accent);
+
+  --font-script: var(--tf-script);
+  --font-display: var(--tf-display);
+  --font-body: var(--tf-body);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-porcelain);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-marigold);
+  outline-offset: 2px;
+}
+
+/* Reveal saat scroll (undangan). Dimatikan bila user memilih reduced motion. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Masker lengkung untuk cover "arch" */
+.arch-mask {
+  border-radius: 999px 999px 0.75rem 0.75rem;
+}
+
+@keyframes gate-out {
+  to {
+    transform: translateY(-100%);
+    opacity: 0.6;
+  }
+}
+.gate-leaving {
+  animation: gate-out 1.1s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .gate-leaving {
+    animation-duration: 0.01s;
+  }
+  .spin-slow {
+    animation: none;
+  }
+}
+
+/* Input standar di dashboard admin */
+@layer components {
+  .field {
+    @apply w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm focus:border-moss focus:outline-none;
+  }
+}
